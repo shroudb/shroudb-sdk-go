@@ -1,3 +1,3 @@
-module github.com/shroudb/shroudb-sdk-go/shroudb-auth
+module github.com/shroudb/shroudb-auth-go
 
 go 1.22
