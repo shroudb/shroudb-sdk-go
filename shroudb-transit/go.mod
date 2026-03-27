@@ -1,3 +1,3 @@
-module github.com/shroudb/shroudb-sdk-go/shroudb-transit
+module github.com/shroudb/shroudb-transit-go
 
 go 1.22
