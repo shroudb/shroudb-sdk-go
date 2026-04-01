@@ -275,6 +275,7 @@ Just-in-time decryption delivery engine
 | `CommandList(ctx)` | List available commands |
 | `Deliver(ctx, json)` | Decrypt recipient and deliver a message |
 | `Health(ctx)` | Server health check |
+| `NotifyEvent(ctx, channel, subject, body)` | Trigger a notification on a pre-configured channel (e.g. rotation/expiry alerts) |
 | `Ping(ctx)` | Connectivity check |
 
 ### `db.Chronicle`

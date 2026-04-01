@@ -171,6 +171,27 @@ func (ns *CourierNamespace) Health(ctx context.Context) (*CourierHealthResponse,
 	return &resp, nil
 }
 
+// NotifyEvent executes NOTIFY_EVENT — Trigger a notification on a pre-configured channel (e.g. rotation/expiry alerts)
+func (ns *CourierNamespace) NotifyEvent(ctx context.Context, channel string, subject string, body string) (*CourierNotifyEventResponse, error) {
+	args := []string{"NOTIFY_EVENT"}
+	args = append(args, fmt.Sprint(channel))
+	args = append(args, subject)
+	args = append(args, body)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp CourierNotifyEventResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Ping executes PING — Connectivity check
 func (ns *CourierNamespace) Ping(ctx context.Context) error {
 	args := []string{"PING"}

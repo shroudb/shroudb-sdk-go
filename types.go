@@ -900,6 +900,14 @@ type CourierHealthResponse struct {
 	Status string `json:"status"`
 }
 
+// CourierNotifyEventResponse is the response from courier.NotifyEvent().
+type CourierNotifyEventResponse struct {
+	Channel string `json:"channel"`
+	DeliveredAt int `json:"delivered_at"`
+	DeliveryId string `json:"delivery_id"`
+	Status string `json:"status"`
+}
+
 // ChronicleActorsResponse is the response from chronicle.Actors().
 type ChronicleActorsResponse struct {
 	Entries []any `json:"entries"`

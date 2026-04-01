@@ -269,6 +269,7 @@ resp, err := db.Keep.List(ctx, "prefix")
 | `CommandList` | `ctx` | `*CourierCommandListResponse, error` | List available commands |
 | `Deliver` | `ctx, json` | `*CourierDeliverResponse, error` | Decrypt recipient and deliver a message |
 | `Health` | `ctx` | `*CourierHealthResponse, error` | Server health check |
+| `NotifyEvent` | `ctx, channel, subject, body` | `*CourierNotifyEventResponse, error` | Trigger a notification on a pre-configured channel (e.g. rotation/expiry alerts) |
 | `Ping` | `ctx` | `error` | Connectivity check |
 
 ### Examples
