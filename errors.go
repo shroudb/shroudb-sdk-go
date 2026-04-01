@@ -39,6 +39,10 @@ const (
 	ErrBAD_ARG = "BAD_ARG"
 	// ErrCAPABILITY_MISSING — Required engine capability not available (e.g., Cipher for PII fields)
 	ErrCAPABILITY_MISSING = "CAPABILITY_MISSING"
+	// ErrCIPHER_UNAVAILABLE — Cipher engine not available for envelope encryption
+	ErrCIPHER_UNAVAILABLE = "CIPHER_UNAVAILABLE"
+	// ErrCRYPTO — Encryption or decryption failed
+	ErrCRYPTO = "CRYPTO"
 	// ErrDECRYPT — Cipher decryption failed
 	ErrDECRYPT = "DECRYPT"
 	// ErrDELETED — Secret has been soft-deleted
@@ -59,6 +63,8 @@ const (
 	ErrIMPORT_FAILED = "IMPORT_FAILED"
 	// ErrINTERNAL — Unexpected server error
 	ErrINTERNAL = "INTERNAL"
+	// ErrINVALID_ARGUMENT — Invalid argument
+	ErrINVALID_ARGUMENT = "INVALID_ARGUMENT"
 	// ErrINVALID_FIELD — Field value is invalid or field cannot be updated via this path
 	ErrINVALID_FIELD = "INVALID_FIELD"
 	// ErrINVALID_TOKEN — Token is invalid, expired, or revoked
@@ -81,18 +87,24 @@ const (
 	ErrNOT_FOUND = "NOT_FOUND"
 	// ErrNOT_READY — Server is not in READY state
 	ErrNOT_READY = "NOT_READY"
+	// ErrOBJECT_STORE — S3 object store operation failed
+	ErrOBJECT_STORE = "OBJECT_STORE"
 	// ErrPIPELINE_ABORTED — Pipeline command failed, all commands rolled back
 	ErrPIPELINE_ABORTED = "PIPELINE_ABORTED"
 	// ErrPOLICY — Operation denied by keyring policy
 	ErrPOLICY = "POLICY"
 	// ErrRETIRED — Key version is retired — use REWRAP
 	ErrRETIRED = "RETIRED"
+	// ErrREVOKED — Blob has been soft-revoked
+	ErrREVOKED = "REVOKED"
 	// ErrSCHEMA_EXISTS — Schema already exists
 	ErrSCHEMA_EXISTS = "SCHEMA_EXISTS"
 	// ErrSCHEMA_NOT_FOUND — Schema does not exist
 	ErrSCHEMA_NOT_FOUND = "SCHEMA_NOT_FOUND"
 	// ErrSCHEMA_VALIDATION — Schema definition is invalid
 	ErrSCHEMA_VALIDATION = "SCHEMA_VALIDATION"
+	// ErrSHREDDED — Blob has been crypto-shredded (unrecoverable)
+	ErrSHREDDED = "SHREDDED"
 	// ErrSIGNING — Failed to sign decision
 	ErrSIGNING = "SIGNING"
 	// ErrSTORAGE — Backend storage error

@@ -58,6 +58,7 @@ db, err := shroudb.New(shroudb.Options{
 	Keep: "shroudb-keep://token@localhost:6899",
 	Courier: "shroudb-courier://token@localhost:6999",
 	Chronicle: "chronicle://token@localhost:7099",
+	Stash: "shroudb-stash://token@localhost:6399",
 })
 ```
 
@@ -294,6 +295,20 @@ Structured audit event engine
 | `IngestBatch(ctx, events_json)` | Ingest multiple events in a single call |
 | `Ping(ctx)` | Keepalive |
 | `Query(ctx, opts)` | Query events with filter predicates |
+
+### `db.Stash`
+
+Encrypted blob storage with S3 backend and envelope encryption
+
+| Method | Description |
+|--------|-------------|
+| `Command(ctx)` | List supported commands |
+| `Health(ctx)` | Health check |
+| `Inspect(ctx, id)` | Read blob metadata without downloading or decrypting |
+| `Ping(ctx)` | Ping-pong |
+| `Retrieve(ctx, id)` | Retrieve and decrypt a blob |
+| `Revoke(ctx, id, opts)` | Revoke a blob (hard crypto-shred by default, SOFT for soft revoke) |
+| `Store(ctx, id, data_b64, opts)` | Store an encrypted blob |
 
 ## Error Handling
 
