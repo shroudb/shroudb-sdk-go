@@ -4,6 +4,7 @@ package shroudb
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 )
@@ -147,10 +148,10 @@ func (ns *KeepNamespace) Ping(ctx context.Context) error {
 }
 
 // Put executes PUT — Store a new version of a secret. Creates the secret if it doesn't exist. Undeletes if soft-deleted.
-func (ns *KeepNamespace) Put(ctx context.Context, path string, value string) (*KeepPutResponse, error) {
+func (ns *KeepNamespace) Put(ctx context.Context, path string, value []byte) (*KeepPutResponse, error) {
 	args := []string{"PUT"}
 	args = append(args, fmt.Sprint(path))
-	args = append(args, fmt.Sprint(value))
+	args = append(args, base64.StdEncoding.EncodeToString(value))
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
 	if err != nil {
 		return nil, err

@@ -4,6 +4,7 @@ package shroudb
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 )
@@ -58,10 +59,10 @@ func (ns *CipherNamespace) CommandList(ctx context.Context) (*CipherCommandListR
 }
 
 // Decrypt executes DECRYPT — Decrypt ciphertext using the embedded key version
-func (ns *CipherNamespace) Decrypt(ctx context.Context, keyring string, ciphertext string, opts *CipherDecryptOptions) (*CipherDecryptResponse, error) {
+func (ns *CipherNamespace) Decrypt(ctx context.Context, keyring string, ciphertext []byte, opts *CipherDecryptOptions) (*CipherDecryptResponse, error) {
 	args := []string{"DECRYPT"}
 	args = append(args, keyring)
-	args = append(args, ciphertext)
+	args = append(args, base64.StdEncoding.EncodeToString(ciphertext))
 	if opts != nil {
 		if opts.Context != nil {
 			args = append(args, "CONTEXT", fmt.Sprint(*opts.Context))
@@ -83,10 +84,10 @@ func (ns *CipherNamespace) Decrypt(ctx context.Context, keyring string, cipherte
 }
 
 // Encrypt executes ENCRYPT — Encrypt plaintext with the active key version
-func (ns *CipherNamespace) Encrypt(ctx context.Context, keyring string, plaintext string, opts *CipherEncryptOptions) (*CipherEncryptResponse, error) {
+func (ns *CipherNamespace) Encrypt(ctx context.Context, keyring string, plaintext []byte, opts *CipherEncryptOptions) (*CipherEncryptResponse, error) {
 	args := []string{"ENCRYPT"}
 	args = append(args, keyring)
-	args = append(args, plaintext)
+	args = append(args, base64.StdEncoding.EncodeToString(plaintext))
 	if opts != nil {
 		if opts.Context != nil {
 			args = append(args, "CONTEXT", fmt.Sprint(*opts.Context))
@@ -242,10 +243,10 @@ func (ns *CipherNamespace) Ping(ctx context.Context) (*CipherPingResponse, error
 }
 
 // Rewrap executes REWRAP — Re-encrypt ciphertext with the current active key version
-func (ns *CipherNamespace) Rewrap(ctx context.Context, keyring string, ciphertext string, opts *CipherRewrapOptions) (*CipherRewrapResponse, error) {
+func (ns *CipherNamespace) Rewrap(ctx context.Context, keyring string, ciphertext []byte, opts *CipherRewrapOptions) (*CipherRewrapResponse, error) {
 	args := []string{"REWRAP"}
 	args = append(args, keyring)
-	args = append(args, ciphertext)
+	args = append(args, base64.StdEncoding.EncodeToString(ciphertext))
 	if opts != nil {
 		if opts.Context != nil {
 			args = append(args, "CONTEXT", fmt.Sprint(*opts.Context))
@@ -294,10 +295,10 @@ func (ns *CipherNamespace) Rotate(ctx context.Context, keyring string, opts *Cip
 }
 
 // Sign executes SIGN — Create a detached signature
-func (ns *CipherNamespace) Sign(ctx context.Context, keyring string, data string) (*CipherSignResponse, error) {
+func (ns *CipherNamespace) Sign(ctx context.Context, keyring string, data []byte) (*CipherSignResponse, error) {
 	args := []string{"SIGN"}
 	args = append(args, keyring)
-	args = append(args, data)
+	args = append(args, base64.StdEncoding.EncodeToString(data))
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
 	if err != nil {
 		return nil, err
@@ -314,10 +315,10 @@ func (ns *CipherNamespace) Sign(ctx context.Context, keyring string, data string
 }
 
 // VerifySignature executes VERIFY_SIGNATURE — Verify a detached signature
-func (ns *CipherNamespace) VerifySignature(ctx context.Context, keyring string, data string, signature string) (*CipherVerifySignatureResponse, error) {
+func (ns *CipherNamespace) VerifySignature(ctx context.Context, keyring string, data []byte, signature string) (*CipherVerifySignatureResponse, error) {
 	args := []string{"VERIFY_SIGNATURE"}
 	args = append(args, keyring)
-	args = append(args, data)
+	args = append(args, base64.StdEncoding.EncodeToString(data))
 	args = append(args, signature)
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
 	if err != nil {
