@@ -979,3 +979,54 @@ type ChronicleQueryOptions struct {
 	// FilterArgs — Filter predicates
 	FilterArgs *any `json:"filter_args,omitempty"`
 }
+
+// StashInspectResponse is the response from stash.Inspect().
+type StashInspectResponse struct {
+	BlobStatus string `json:"blob_status"`
+	ClientEncrypted bool `json:"client_encrypted"`
+	ContentType string `json:"content_type"`
+	CreatedAt int `json:"created_at"`
+	EncryptedSize int `json:"encrypted_size"`
+	Id string `json:"id"`
+	KeyVersion int `json:"key_version"`
+	Keyring string `json:"keyring"`
+	PlaintextSize int `json:"plaintext_size"`
+	Status string `json:"status"`
+	UpdatedAt int `json:"updated_at"`
+	ViewerCount int `json:"viewer_count"`
+}
+
+// StashRevokeResponse is the response from stash.Revoke().
+type StashRevokeResponse struct {
+	Id string `json:"id"`
+	RevokeMode string `json:"revoke_mode"`
+	Status string `json:"status"`
+}
+
+// StashStoreResponse is the response from stash.Store().
+type StashStoreResponse struct {
+	ClientEncrypted bool `json:"client_encrypted"`
+	EncryptedSize int `json:"encrypted_size"`
+	Id string `json:"id"`
+	KeyVersion int `json:"key_version"`
+	Keyring string `json:"keyring"`
+	PlaintextSize int `json:"plaintext_size"`
+	S3Key string `json:"s3_key"`
+	Status string `json:"status"`
+}
+
+// StashRevokeOptions contains optional parameters for stash.Revoke().
+type StashRevokeOptions struct {
+	// Soft — Soft revoke (preserve data, block access)
+	Soft bool `json:"soft,omitempty"`
+}
+
+// StashStoreOptions contains optional parameters for stash.Store().
+type StashStoreOptions struct {
+	// ClientEncrypted — Passthrough mode: value is the wrapped DEK from client-side encryption
+	ClientEncrypted *string `json:"client_encrypted,omitempty"`
+	// ContentType — MIME content type
+	ContentType *string `json:"content_type,omitempty"`
+	// Keyring — Cipher keyring name (default: stash-blobs)
+	Keyring *string `json:"keyring,omitempty"`
+}
