@@ -309,29 +309,6 @@ resp, err := db.Chronicle.IngestBatch(ctx, map[string]any{})
 // resp.Ingested
 ```
 
-## `db.Stash` — Encrypted blob storage with S3 backend and envelope encryption
-
-| Method | Args | Returns | Description |
-|--------|------|---------|-------------|
-| `Command` | `ctx` | `error` | List supported commands |
-| `Health` | `ctx` | `error` | Health check |
-| `Inspect` | `ctx, id` | `*StashInspectResponse, error` | Read blob metadata without downloading or decrypting |
-| `Ping` | `ctx` | `error` | Ping-pong |
-| `Retrieve` | `ctx, id` | `error` | Retrieve and decrypt a blob |
-| `Revoke` | `ctx, id, opts` | `*StashRevokeResponse, error` | Revoke a blob (hard crypto-shred by default, SOFT for soft revoke) |
-| `Store` | `ctx, id, data_b64, opts` | `*StashStoreResponse, error` | Store an encrypted blob |
-
-### Examples
-
-```go
-ctx := context.Background()
-resp, err := db.Stash.Inspect(ctx, "alice")
-// resp.BlobStatus
-err := db.Stash.Retrieve(ctx, "alice")
-resp, err := db.Stash.Revoke(ctx, "alice")
-// resp.Id
-```
-
 ## Error Handling
 
 All methods return `error` (or `(*Response, error)`). Errors from the server are `*ShrouDBError` with a `Code` field matching the server error code (e.g., `NOTFOUND`, `DENIED`, `BADARG`).
@@ -390,12 +367,6 @@ if err != nil {
 | `VERSION_NOTFOUND` | `ErrVERSION_NOTFOUND` | Requested version does not exist |
 | `ADAPTER` | `ErrADAPTER` | Delivery adapter failure |
 | `DECRYPT` | `ErrDECRYPT` | Cipher decryption failed |
-| `CIPHER_UNAVAILABLE` | `ErrCIPHER_UNAVAILABLE` | Cipher engine not available for envelope encryption |
-| `CRYPTO` | `ErrCRYPTO` | Encryption or decryption failed |
-| `INVALID_ARGUMENT` | `ErrINVALID_ARGUMENT` | Invalid argument |
-| `OBJECT_STORE` | `ErrOBJECT_STORE` | S3 object store operation failed |
-| `REVOKED` | `ErrREVOKED` | Blob has been soft-revoked |
-| `SHREDDED` | `ErrSHREDDED` | Blob has been crypto-shredded (unrecoverable) |
 
 ## Common Mistakes
 

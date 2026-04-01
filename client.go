@@ -37,8 +37,6 @@ type Options struct {
 	Courier string
 	// Chronicle is the direct chronicle URI (overrides Moat for this engine).
 	Chronicle string
-	// Stash is the direct stash URI (overrides Moat for this engine).
-	Stash string
 }
 
 // ShrouDB is the unified client for all ShrouDB engines.
@@ -58,7 +56,6 @@ type ShrouDB struct {
 	Keep *KeepNamespace
 	Courier *CourierNamespace
 	Chronicle *ChronicleNamespace
-	Stash *StashNamespace
 
 	transports []Transport
 }
@@ -80,7 +77,6 @@ func New(opts Options) (*ShrouDB, error) {
 				"keep": "/v1/keep",
 				"courier": "/v1/courier",
 				"chronicle": "/v1/chronicle",
-				"stash": "/v1/stash",
 			}
 			defaultTransport = NewHttpTransport(opts.Moat, opts.Token, prefixes)
 		} else {
@@ -190,17 +186,6 @@ func New(opts Options) (*ShrouDB, error) {
 		db.Chronicle = newChronicleNamespace(t, "chronicle")
 	} else if defaultTransport != nil {
 		db.Chronicle = newChronicleNamespace(defaultTransport, "chronicle")
-	}
-
-	if opts.Stash != "" {
-		t, err := NewResp3Transport(opts.Stash)
-		if err != nil {
-			return nil, fmt.Errorf("stash transport: %w", err)
-		}
-		db.transports = append(db.transports, t)
-		db.Stash = newStashNamespace(t, "stash")
-	} else if defaultTransport != nil {
-		db.Stash = newStashNamespace(defaultTransport, "stash")
 	}
 
 	return db, nil
