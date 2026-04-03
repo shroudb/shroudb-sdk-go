@@ -106,11 +106,11 @@ func (ns *ShroudbNamespace) Delete(ctx context.Context, namespace string, key st
 }
 
 // Get executes GET — Retrieve the value at a key
-func (ns *ShroudbNamespace) Get(ctx context.Context, namespace string, key string, META any, opts *ShroudbGetOptions) (*ShroudbGetResponse, error) {
+func (ns *ShroudbNamespace) Get(ctx context.Context, namespace string, key string, META bool, opts *ShroudbGetOptions) (*ShroudbGetResponse, error) {
 	args := []string{"GET"}
 	args = append(args, namespace)
 	args = append(args, key)
-	if META != nil {
+	if META {
 		args = append(args, fmt.Sprint(META))
 	}
 	if opts != nil {
@@ -226,10 +226,10 @@ func (ns *ShroudbNamespace) NamespaceCreate(ctx context.Context, name string, op
 }
 
 // NamespaceDrop executes NAMESPACE DROP — Drop a namespace
-func (ns *ShroudbNamespace) NamespaceDrop(ctx context.Context, name string, FORCE any) error {
+func (ns *ShroudbNamespace) NamespaceDrop(ctx context.Context, name string, FORCE bool) error {
 	args := []string{"NAMESPACE", "DROP"}
 	args = append(args, name)
-	if FORCE != nil {
+	if FORCE {
 		args = append(args, fmt.Sprint(FORCE))
 	}
 	_, err := ns.transport.Execute(ctx, ns.engine, args)

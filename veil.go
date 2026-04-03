@@ -179,8 +179,8 @@ func (ns *VeilNamespace) Put(ctx context.Context, index string, id string, data_
 		if opts.Field != nil {
 			args = append(args, "FIELD", fmt.Sprint(*opts.Field))
 		}
-		if opts.Blind != nil {
-			args = append(args, "BLIND", fmt.Sprint(*opts.Blind))
+		if opts.Blind {
+			args = append(args, "BLIND")
 		}
 	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
@@ -213,8 +213,8 @@ func (ns *VeilNamespace) Search(ctx context.Context, index string, query string,
 		if opts.Limit != nil {
 			args = append(args, "LIMIT", fmt.Sprint(*opts.Limit))
 		}
-		if opts.Blind != nil {
-			args = append(args, "BLIND", fmt.Sprint(*opts.Blind))
+		if opts.Blind {
+			args = append(args, "BLIND")
 		}
 	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)

@@ -110,11 +110,11 @@ func (ns *ForgeNamespace) CaRotate(ctx context.Context, name string, opts *Forge
 	args := []string{"CA", "ROTATE"}
 	args = append(args, fmt.Sprint(name))
 	if opts != nil {
-		if opts.Force != nil {
-			args = append(args, "FORCE", fmt.Sprint(*opts.Force))
+		if opts.Force {
+			args = append(args, "FORCE")
 		}
-		if opts.Dryrun != nil {
-			args = append(args, "DRYRUN", fmt.Sprint(*opts.Dryrun))
+		if opts.Dryrun {
+			args = append(args, "DRYRUN")
 		}
 	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)

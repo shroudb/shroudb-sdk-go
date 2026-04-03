@@ -549,7 +549,7 @@ type VeilPutOptions struct {
 	// Field — JSON field to extract for tokenization (standard mode only)
 	Field *string `json:"field,omitempty"`
 	// Blind — E2EE mode: treat data_b64 as pre-computed blind tokens
-	Blind *any `json:"blind,omitempty"`
+	Blind bool `json:"blind,omitempty"`
 }
 
 // VeilSearchOptions contains optional parameters for veil.Search().
@@ -561,7 +561,7 @@ type VeilSearchOptions struct {
 	// Limit — Maximum results to return
 	Limit *int `json:"limit,omitempty"`
 	// Blind — E2EE mode: treat query as pre-computed blind tokens
-	Blind *any `json:"blind,omitempty"`
+	Blind bool `json:"blind,omitempty"`
 }
 
 // VeilTokenizeOptions contains optional parameters for veil.Tokenize().
@@ -665,9 +665,9 @@ type SentryPolicyUpdateResponse struct {
 // SentryKeyRotateOptions contains optional parameters for sentry.KeyRotate().
 type SentryKeyRotateOptions struct {
 	// Force — Force rotation regardless of key age
-	Force *any `json:"FORCE,omitempty"`
+	Force bool `json:"FORCE,omitempty"`
 	// Dryrun — Preview rotation without applying
-	Dryrun *any `json:"DRYRUN,omitempty"`
+	Dryrun bool `json:"DRYRUN,omitempty"`
 }
 
 // ForgeCaCreateResponse is the response from forge.CaCreate().
@@ -750,8 +750,8 @@ type ForgeCaCreateOptions struct {
 
 // ForgeCaRotateOptions contains optional parameters for forge.CaRotate().
 type ForgeCaRotateOptions struct {
-	Force *any `json:"force,omitempty"`
-	Dryrun *any `json:"dryrun,omitempty"`
+	Force bool `json:"force,omitempty"`
+	Dryrun bool `json:"dryrun,omitempty"`
 }
 
 // ForgeIssueOptions contains optional parameters for forge.Issue().

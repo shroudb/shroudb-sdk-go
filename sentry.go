@@ -134,11 +134,11 @@ func (ns *SentryNamespace) KeyInfo(ctx context.Context) (*SentryKeyInfoResponse,
 func (ns *SentryNamespace) KeyRotate(ctx context.Context, opts *SentryKeyRotateOptions) (*SentryKeyRotateResponse, error) {
 	args := []string{"KEY", "ROTATE"}
 	if opts != nil {
-		if opts.Force != nil {
-			args = append(args, "FORCE", fmt.Sprint(*opts.Force))
+		if opts.Force {
+			args = append(args, "FORCE")
 		}
-		if opts.Dryrun != nil {
-			args = append(args, "DRYRUN", fmt.Sprint(*opts.Dryrun))
+		if opts.Dryrun {
+			args = append(args, "DRYRUN")
 		}
 	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)

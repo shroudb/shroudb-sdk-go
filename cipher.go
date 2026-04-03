@@ -59,10 +59,10 @@ func (ns *CipherNamespace) CommandList(ctx context.Context) (*CipherCommandListR
 }
 
 // Decrypt executes DECRYPT — Decrypt ciphertext using the embedded key version
-func (ns *CipherNamespace) Decrypt(ctx context.Context, keyring string, ciphertext []byte, opts *CipherDecryptOptions) (*CipherDecryptResponse, error) {
+func (ns *CipherNamespace) Decrypt(ctx context.Context, keyring string, ciphertext string, opts *CipherDecryptOptions) (*CipherDecryptResponse, error) {
 	args := []string{"DECRYPT"}
 	args = append(args, keyring)
-	args = append(args, base64.StdEncoding.EncodeToString(ciphertext))
+	args = append(args, ciphertext)
 	if opts != nil {
 		if opts.Context != nil {
 			args = append(args, "CONTEXT", fmt.Sprint(*opts.Context))
@@ -243,10 +243,10 @@ func (ns *CipherNamespace) Ping(ctx context.Context) (*CipherPingResponse, error
 }
 
 // Rewrap executes REWRAP — Re-encrypt ciphertext with the current active key version
-func (ns *CipherNamespace) Rewrap(ctx context.Context, keyring string, ciphertext []byte, opts *CipherRewrapOptions) (*CipherRewrapResponse, error) {
+func (ns *CipherNamespace) Rewrap(ctx context.Context, keyring string, ciphertext string, opts *CipherRewrapOptions) (*CipherRewrapResponse, error) {
 	args := []string{"REWRAP"}
 	args = append(args, keyring)
-	args = append(args, base64.StdEncoding.EncodeToString(ciphertext))
+	args = append(args, ciphertext)
 	if opts != nil {
 		if opts.Context != nil {
 			args = append(args, "CONTEXT", fmt.Sprint(*opts.Context))
