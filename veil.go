@@ -169,15 +169,18 @@ func (ns *VeilNamespace) Ping(ctx context.Context) (*VeilPingResponse, error) {
 	return &resp, nil
 }
 
-// Put executes PUT — Tokenize plaintext and store the blind tokens under the given entry ID
-func (ns *VeilNamespace) Put(ctx context.Context, index string, id string, plaintext_b64 string, opts *VeilPutOptions) (*VeilPutResponse, error) {
+// Put executes PUT — Store blind tokens for an entry. In standard mode, data_b64 is base64-encoded plaintext (server tokenizes). With BLIND flag, data_b64 is base64-encoded BlindTokenSet JSON (client pre-tokenized, for E2EE).
+func (ns *VeilNamespace) Put(ctx context.Context, index string, id string, data_b64 string, opts *VeilPutOptions) (*VeilPutResponse, error) {
 	args := []string{"PUT"}
 	args = append(args, index)
 	args = append(args, id)
-	args = append(args, plaintext_b64)
+	args = append(args, data_b64)
 	if opts != nil {
 		if opts.Field != nil {
 			args = append(args, "FIELD", fmt.Sprint(*opts.Field))
+		}
+		if opts.Blind != nil {
+			args = append(args, "BLIND", fmt.Sprint(*opts.Blind))
 		}
 	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
@@ -195,7 +198,7 @@ func (ns *VeilNamespace) Put(ctx context.Context, index string, id string, plain
 	return &resp, nil
 }
 
-// Search executes SEARCH — Search a blind index. Tokenizes the query, generates blind tokens, and compares against stored entries.
+// Search executes SEARCH — Search a blind index. In standard mode, query is plain text (server tokenizes). With BLIND flag, query is base64-encoded BlindTokenSet JSON (client pre-tokenized, for E2EE).
 func (ns *VeilNamespace) Search(ctx context.Context, index string, query string, opts *VeilSearchOptions) (*VeilSearchResponse, error) {
 	args := []string{"SEARCH"}
 	args = append(args, index)
@@ -209,6 +212,9 @@ func (ns *VeilNamespace) Search(ctx context.Context, index string, query string,
 		}
 		if opts.Limit != nil {
 			args = append(args, "LIMIT", fmt.Sprint(*opts.Limit))
+		}
+		if opts.Blind != nil {
+			args = append(args, "BLIND", fmt.Sprint(*opts.Blind))
 		}
 	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)

@@ -546,18 +546,22 @@ type VeilTokenizeResponse struct {
 
 // VeilPutOptions contains optional parameters for veil.Put().
 type VeilPutOptions struct {
-	// Field — JSON field to extract for tokenization
+	// Field — JSON field to extract for tokenization (standard mode only)
 	Field *string `json:"field,omitempty"`
+	// Blind — E2EE mode: treat data_b64 as pre-computed blind tokens
+	Blind *any `json:"blind,omitempty"`
 }
 
 // VeilSearchOptions contains optional parameters for veil.Search().
 type VeilSearchOptions struct {
 	// Mode — Match mode: exact, contains, prefix, fuzzy
 	Mode *string `json:"mode,omitempty"`
-	// Field — JSON field to extract for tokenization
+	// Field — JSON field to extract for tokenization (standard mode only)
 	Field *string `json:"field,omitempty"`
 	// Limit — Maximum results to return
 	Limit *int `json:"limit,omitempty"`
+	// Blind — E2EE mode: treat query as pre-computed blind tokens
+	Blind *any `json:"blind,omitempty"`
 }
 
 // VeilTokenizeOptions contains optional parameters for veil.Tokenize().

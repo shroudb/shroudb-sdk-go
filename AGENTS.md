@@ -156,8 +156,8 @@ resp, err := db.Sigil.CredentialReset(ctx, "myapp", "alice", "email", "new")
 | `IndexInfo` | `ctx, name` | `*VeilIndexInfoResponse, error` | Get information about a blind index |
 | `IndexList` | `ctx` | `*VeilIndexListResponse, error` | List all blind index names |
 | `Ping` | `ctx` | `*VeilPingResponse, error` | Ping-pong |
-| `Put` | `ctx, index, id, plaintext_b64, opts` | `*VeilPutResponse, error` | Tokenize plaintext and store the blind tokens under the given entry ID |
-| `Search` | `ctx, index, query, opts` | `*VeilSearchResponse, error` | Search a blind index. Tokenizes the query, generates blind tokens, and compares against stored entries. |
+| `Put` | `ctx, index, id, data_b64, opts` | `*VeilPutResponse, error` | Store blind tokens for an entry. In standard mode, data_b64 is base64-encoded plaintext (server tokenizes). With BLIND flag, data_b64 is base64-encoded BlindTokenSet JSON (client pre-tokenized, for E2EE). |
+| `Search` | `ctx, index, query, opts` | `*VeilSearchResponse, error` | Search a blind index. In standard mode, query is plain text (server tokenizes). With BLIND flag, query is base64-encoded BlindTokenSet JSON (client pre-tokenized, for E2EE). |
 | `Tokenize` | `ctx, index, plaintext_b64, opts` | `*VeilTokenizeResponse, error` | Generate blind tokens from plaintext without storing. Returns HMAC-derived tokens for external use. |
 
 ### Examples
