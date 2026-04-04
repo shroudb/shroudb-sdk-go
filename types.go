@@ -459,18 +459,18 @@ type SigilUserVerifyResponse struct {
 
 // SigilCredentialImportOptions contains optional parameters for sigil.CredentialImport().
 type SigilCredentialImportOptions struct {
-	Metadata any `json:"metadata,omitempty"`
+	Meta any `json:"meta,omitempty"`
 }
 
 // SigilPasswordImportOptions contains optional parameters for sigil.PasswordImport().
 type SigilPasswordImportOptions struct {
-	Metadata any `json:"metadata,omitempty"`
+	Meta any `json:"meta,omitempty"`
 }
 
 // SigilSessionCreateOptions contains optional parameters for sigil.SessionCreate().
 type SigilSessionCreateOptions struct {
-	// Metadata — Extra claims to merge into access token
-	Metadata any `json:"metadata,omitempty"`
+	// Meta — Extra claims to merge into access token
+	Meta any `json:"meta,omitempty"`
 }
 
 // VeilAuthResponse is the response from veil.Auth().

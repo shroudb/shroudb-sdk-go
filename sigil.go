@@ -51,10 +51,10 @@ func (ns *SigilNamespace) CredentialImport(ctx context.Context, schema string, i
 	args = append(args, field)
 	args = append(args, hash)
 	if opts != nil {
-		if opts.Metadata != nil {
-			jsonBytes, err := json.Marshal(opts.Metadata)
+		if opts.Meta != nil {
+			jsonBytes, err := json.Marshal(opts.Meta)
 			if err == nil {
-				args = append(args, "METADATA", string(jsonBytes))
+				args = append(args, "META", string(jsonBytes))
 			}
 		}
 	}
@@ -319,10 +319,10 @@ func (ns *SigilNamespace) PasswordImport(ctx context.Context, schema string, id 
 	args = append(args, id)
 	args = append(args, hash)
 	if opts != nil {
-		if opts.Metadata != nil {
-			jsonBytes, err := json.Marshal(opts.Metadata)
+		if opts.Meta != nil {
+			jsonBytes, err := json.Marshal(opts.Meta)
 			if err == nil {
-				args = append(args, "METADATA", string(jsonBytes))
+				args = append(args, "META", string(jsonBytes))
 			}
 		}
 	}
@@ -430,10 +430,10 @@ func (ns *SigilNamespace) SessionCreate(ctx context.Context, schema string, id s
 	args = append(args, id)
 	args = append(args, password)
 	if opts != nil {
-		if opts.Metadata != nil {
-			jsonBytes, err := json.Marshal(opts.Metadata)
+		if opts.Meta != nil {
+			jsonBytes, err := json.Marshal(opts.Meta)
 			if err == nil {
-				args = append(args, "METADATA", string(jsonBytes))
+				args = append(args, "META", string(jsonBytes))
 			}
 		}
 	}
