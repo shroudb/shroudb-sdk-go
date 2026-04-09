@@ -153,8 +153,12 @@ resp, err := db.Sigil.CredentialReset(ctx, "myapp", "alice", "email", "new")
 | `Delete` | `ctx, index, id` | `*VeilDeleteResponse, error` | Remove an entry's blind tokens from the index |
 | `Health` | `ctx` | `*VeilHealthResponse, error` | Health check |
 | `IndexCreate` | `ctx, name` | `*VeilIndexCreateResponse, error` | Create a new blind index with a fresh HMAC key |
+| `IndexDestroy` | `ctx, name` | `*VeilIndexDestroyResponse, error` | Crypto-shred an index: zeroize the HMAC key, delete all entries, and remove the index. After destruction, the index name can be reused. |
 | `IndexInfo` | `ctx, name` | `*VeilIndexInfoResponse, error` | Get information about a blind index |
 | `IndexList` | `ctx` | `*VeilIndexListResponse, error` | List all blind index names |
+| `IndexReconcile` | `ctx, name, valid_ids` | `*VeilIndexReconcileResponse, error` | Remove orphaned entries from the index. Compares stored entry IDs against the provided valid set and deletes any entries not in the set. |
+| `IndexReindex` | `ctx, name` | `*VeilIndexReindexResponse, error` | Clear all entries and update the tokenizer version to current. The HMAC key is preserved. After reindex, the application must re-submit all entries via PUT. Use this when the tokenizer algorithm has been upgraded. |
+| `IndexRotate` | `ctx, name` | `*VeilIndexRotateResponse, error` | Rotate an index's HMAC key. Generates a new key, deletes all existing entries. The application must re-index all entries after rotation. |
 | `Ping` | `ctx` | `*VeilPingResponse, error` | Ping-pong |
 | `Put` | `ctx, index, id, data_b64, opts` | `*VeilPutResponse, error` | Store blind tokens for an entry. In standard mode, data_b64 is base64-encoded plaintext (server tokenizes). With BLIND flag, data_b64 is base64-encoded BlindTokenSet JSON (client pre-tokenized, for E2EE). |
 | `Search` | `ctx, index, query, opts` | `*VeilSearchResponse, error` | Search a blind index. In standard mode, query is plain text (server tokenizes). With BLIND flag, query is base64-encoded BlindTokenSet JSON (client pre-tokenized, for E2EE). |
@@ -168,8 +172,8 @@ resp, err := db.Veil.Delete(ctx, "index", "alice")
 // resp.Status
 resp, err := db.Veil.IndexCreate(ctx, "my-keyring")
 // resp.Status
-resp, err := db.Veil.IndexInfo(ctx, "my-keyring")
-// resp.Index
+resp, err := db.Veil.IndexDestroy(ctx, "my-keyring")
+// resp.Status
 ```
 
 ## `db.Sentry` — sentry

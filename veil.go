@@ -114,6 +114,25 @@ func (ns *VeilNamespace) IndexCreate(ctx context.Context, name string) (*VeilInd
 	return &resp, nil
 }
 
+// IndexDestroy executes INDEX DESTROY — Crypto-shred an index: zeroize the HMAC key, delete all entries, and remove the index. After destruction, the index name can be reused.
+func (ns *VeilNamespace) IndexDestroy(ctx context.Context, name string) (*VeilIndexDestroyResponse, error) {
+	args := []string{"INDEX", "DESTROY"}
+	args = append(args, name)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp VeilIndexDestroyResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // IndexInfo executes INDEX INFO — Get information about a blind index
 func (ns *VeilNamespace) IndexInfo(ctx context.Context, name string) (*VeilIndexInfoResponse, error) {
 	args := []string{"INDEX", "INFO"}
@@ -141,6 +160,64 @@ func (ns *VeilNamespace) IndexList(ctx context.Context) (*VeilIndexListResponse,
 		return nil, err
 	}
 	var resp VeilIndexListResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// IndexReconcile executes INDEX RECONCILE — Remove orphaned entries from the index. Compares stored entry IDs against the provided valid set and deletes any entries not in the set.
+func (ns *VeilNamespace) IndexReconcile(ctx context.Context, name string, valid_ids any) (*VeilIndexReconcileResponse, error) {
+	args := []string{"INDEX", "RECONCILE"}
+	args = append(args, name)
+	args = append(args, fmt.Sprint(valid_ids))
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp VeilIndexReconcileResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// IndexReindex executes INDEX REINDEX — Clear all entries and update the tokenizer version to current. The HMAC key is preserved. After reindex, the application must re-submit all entries via PUT. Use this when the tokenizer algorithm has been upgraded.
+func (ns *VeilNamespace) IndexReindex(ctx context.Context, name string) (*VeilIndexReindexResponse, error) {
+	args := []string{"INDEX", "REINDEX"}
+	args = append(args, name)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp VeilIndexReindexResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// IndexRotate executes INDEX ROTATE — Rotate an index's HMAC key. Generates a new key, deletes all existing entries. The application must re-index all entries after rotation.
+func (ns *VeilNamespace) IndexRotate(ctx context.Context, name string) (*VeilIndexRotateResponse, error) {
+	args := []string{"INDEX", "ROTATE"}
+	args = append(args, name)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp VeilIndexRotateResponse
 	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("marshal response: %w", err)

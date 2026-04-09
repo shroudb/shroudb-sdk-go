@@ -200,8 +200,12 @@ veil
 | `Delete(ctx, index, id)` | Remove an entry's blind tokens from the index |
 | `Health(ctx)` | Health check |
 | `IndexCreate(ctx, name)` | Create a new blind index with a fresh HMAC key |
+| `IndexDestroy(ctx, name)` | Crypto-shred an index: zeroize the HMAC key, delete all entries, and remove the index. After destruction, the index name can be reused. |
 | `IndexInfo(ctx, name)` | Get information about a blind index |
 | `IndexList(ctx)` | List all blind index names |
+| `IndexReconcile(ctx, name, valid_ids)` | Remove orphaned entries from the index. Compares stored entry IDs against the provided valid set and deletes any entries not in the set. |
+| `IndexReindex(ctx, name)` | Clear all entries and update the tokenizer version to current. The HMAC key is preserved. After reindex, the application must re-submit all entries via PUT. Use this when the tokenizer algorithm has been upgraded. |
+| `IndexRotate(ctx, name)` | Rotate an index's HMAC key. Generates a new key, deletes all existing entries. The application must re-index all entries after rotation. |
 | `Ping(ctx)` | Ping-pong |
 | `Put(ctx, index, id, data_b64, opts)` | Store blind tokens for an entry. In standard mode, data_b64 is base64-encoded plaintext (server tokenizes). With BLIND flag, data_b64 is base64-encoded BlindTokenSet JSON (client pre-tokenized, for E2EE). |
 | `Search(ctx, index, query, opts)` | Search a blind index. In standard mode, query is plain text (server tokenizes). With BLIND flag, query is base64-encoded BlindTokenSet JSON (client pre-tokenized, for E2EE). |

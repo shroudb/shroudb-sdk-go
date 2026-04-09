@@ -501,6 +501,14 @@ type VeilIndexCreateResponse struct {
 	Status any `json:"status"`
 	Index any `json:"index"`
 	CreatedAt any `json:"created_at"`
+	TokenizerVersion any `json:"tokenizer_version"`
+}
+
+// VeilIndexDestroyResponse is the response from veil.IndexDestroy().
+type VeilIndexDestroyResponse struct {
+	Status any `json:"status"`
+	Index any `json:"index"`
+	DeletedEntries any `json:"deleted_entries"`
 }
 
 // VeilIndexInfoResponse is the response from veil.IndexInfo().
@@ -508,12 +516,36 @@ type VeilIndexInfoResponse struct {
 	Index any `json:"index"`
 	CreatedAt any `json:"created_at"`
 	EntryCount any `json:"entry_count"`
+	TokenizerVersion any `json:"tokenizer_version"`
 }
 
 // VeilIndexListResponse is the response from veil.IndexList().
 type VeilIndexListResponse struct {
 	Items string `json:"items"`
 	Type []any `json:"type"`
+}
+
+// VeilIndexReconcileResponse is the response from veil.IndexReconcile().
+type VeilIndexReconcileResponse struct {
+	Status any `json:"status"`
+	Index any `json:"index"`
+	OrphansRemoved any `json:"orphans_removed"`
+}
+
+// VeilIndexReindexResponse is the response from veil.IndexReindex().
+type VeilIndexReindexResponse struct {
+	Status any `json:"status"`
+	Index any `json:"index"`
+	TokenizerVersion any `json:"tokenizer_version"`
+	EntriesCleared any `json:"entries_cleared"`
+}
+
+// VeilIndexRotateResponse is the response from veil.IndexRotate().
+type VeilIndexRotateResponse struct {
+	Status any `json:"status"`
+	Index any `json:"index"`
+	RotatedAt any `json:"rotated_at"`
+	EntryCount any `json:"entry_count"`
 }
 
 // VeilPingResponse is the response from veil.Ping().
