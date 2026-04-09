@@ -38,11 +38,11 @@ defer db.Close()
 | `Auth` | `ctx, token` | `*ShroudbAuthResponse, error` | Authenticate the connection with a token |
 | `CommandList` | `ctx` | `*ShroudbCommandListResponse, error` | List all supported commands |
 | `ConfigGet` | `ctx, key` | `*ShroudbConfigGetResponse, error` | Read a runtime configuration value |
-| `ConfigSet` | `ctx, key, value` | `error` | Set a runtime configuration value (admin only) |
+| `ConfigSet` | `ctx, key, value` | `error` | Set a runtime configuration value (admin only). Only registered config keys are accepted; unknown keys return an error. Values are type-checked against the key's schema (u64, bool, string). Valid keys: max_segment_bytes, max_segment_entries, snapshot_entry_threshold, snapshot_time_threshold_secs. |
 | `Delete` | `ctx, namespace, key` | `*ShroudbDeleteResponse, error` | Delete a key by writing a tombstone |
 | `Get` | `ctx, namespace, key, META?, opts` | `*ShroudbGetResponse, error` | Retrieve the value at a key |
 | `Health` | `ctx` | `*ShroudbHealthResponse, error` | Check server health |
-| `List` | `ctx, namespace, opts` | `*ShroudbListResponse, error` | List active keys in a namespace |
+| `List` | `ctx, namespace, opts` | `*ShroudbListResponse, error` | List active keys in a namespace. Returns an error if the CURSOR value does not correspond to a key that exists in the namespace. |
 | `NamespaceAlter` | `ctx, name, opts` | `error` | Update namespace configuration (enforce-on-write-only) |
 | `NamespaceCreate` | `ctx, name, opts` | `error` | Create a new namespace |
 | `NamespaceDrop` | `ctx, name, FORCE?` | `error` | Drop a namespace |
@@ -187,6 +187,7 @@ resp, err := db.Veil.IndexInfo(ctx, "my-keyring")
 | `PolicyCreate` | `ctx, name, json` | `*SentryPolicyCreateResponse, error` | Create a new authorization policy |
 | `PolicyDelete` | `ctx, name` | `*SentryPolicyDeleteResponse, error` | Delete a policy |
 | `PolicyGet` | `ctx, name` | `*SentryPolicyGetResponse, error` | Get a policy by name |
+| `PolicyHistory` | `ctx, name` | `*SentryPolicyHistoryResponse, error` | Get version history of a policy (all past versions plus current) |
 | `PolicyList` | `ctx` | `*SentryPolicyListResponse, error` | List all policy names |
 | `PolicyUpdate` | `ctx, name, json` | `*SentryPolicyUpdateResponse, error` | Update an existing policy |
 
@@ -211,6 +212,8 @@ resp, err := db.Sentry.PolicyDelete(ctx, "name")
 | `CaInfo` | `ctx, name` | `*ForgeCaInfoResponse, error` | Get CA metadata and key version status |
 | `CaList` | `ctx` | `*ForgeCaListResponse, error` | List all Certificate Authorities |
 | `CaRotate` | `ctx, name, opts` | `*ForgeCaRotateResponse, error` | Rotate CA signing key |
+| `ConfigGet` | `ctx, key` | `*ForgeConfigGetResponse, error` | Get a runtime configuration value |
+| `ConfigSet` | `ctx, key, value` | `*ForgeConfigSetResponse, error` | Set a runtime configuration value (only scheduler_interval_secs is mutable) |
 | `Inspect` | `ctx, ca, serial` | `*ForgeInspectResponse, error` | Get certificate details |
 | `Issue` | `ctx, ca, subject, profile, opts` | `*ForgeIssueResponse, error` | Issue a new certificate. Returns cert + private key (private key never stored). |
 | `IssueFromCsr` | `ctx, ca, csr_pem, profile, opts` | `*ForgeIssueFromCsrResponse, error` | Issue a certificate from a PEM-encoded CSR |
@@ -268,7 +271,10 @@ resp, err := db.Keep.List(ctx, "prefix")
 | `ChannelList` | `ctx` | `*CourierChannelListResponse, error` | List all channels |
 | `CommandList` | `ctx` | `*CourierCommandListResponse, error` | List available commands |
 | `Deliver` | `ctx, json` | `*CourierDeliverResponse, error` | Decrypt recipient and deliver a message |
+| `DeliveryGet` | `ctx, id` | `*CourierDeliveryGetResponse, error` | Get a delivery receipt by ID |
+| `DeliveryList` | `ctx, opts` | `*CourierDeliveryListResponse, error` | List delivery receipts, optionally filtered by channel |
 | `Health` | `ctx` | `*CourierHealthResponse, error` | Server health check |
+| `Metrics` | `ctx` | `*CourierMetricsResponse, error` | Get delivery metrics (total, success, failure counts, per-channel breakdown) |
 | `NotifyEvent` | `ctx, channel, subject, body` | `*CourierNotifyEventResponse, error` | Trigger a notification on a pre-configured channel (e.g. rotation/expiry alerts) |
 | `Ping` | `ctx` | `error` | Connectivity check |
 
@@ -298,6 +304,7 @@ resp, err := db.Courier.ChannelGet(ctx, "name")
 | `IngestBatch` | `ctx, events_json` | `*ChronicleIngestBatchResponse, error` | Ingest multiple events in a single call |
 | `Ping` | `ctx` | `error` | Keepalive |
 | `Query` | `ctx, opts` | `*ChronicleQueryResponse, error` | Query events with filter predicates |
+| `Verify` | `ctx` | `*ChronicleVerifyResponse, error` | Verify the cryptographic hash chain integrity of all events. Returns the number of verified events or an error if tampering is detected. |
 
 ### Examples
 

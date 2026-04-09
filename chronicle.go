@@ -224,3 +224,21 @@ func (ns *ChronicleNamespace) Query(ctx context.Context, opts *ChronicleQueryOpt
 	}
 	return &resp, nil
 }
+
+// Verify executes VERIFY — Verify the cryptographic hash chain integrity of all events. Returns the number of verified events or an error if tampering is detected.
+func (ns *ChronicleNamespace) Verify(ctx context.Context) (*ChronicleVerifyResponse, error) {
+	args := []string{"VERIFY"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ChronicleVerifyResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}

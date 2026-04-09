@@ -114,11 +114,11 @@ Encrypted key-value database
 | `Auth(ctx, token)` | Authenticate the connection with a token |
 | `CommandList(ctx)` | List all supported commands |
 | `ConfigGet(ctx, key)` | Read a runtime configuration value |
-| `ConfigSet(ctx, key, value)` | Set a runtime configuration value (admin only) |
+| `ConfigSet(ctx, key, value)` | Set a runtime configuration value (admin only). Only registered config keys are accepted; unknown keys return an error. Values are type-checked against the key's schema (u64, bool, string). Valid keys: max_segment_bytes, max_segment_entries, snapshot_entry_threshold, snapshot_time_threshold_secs. |
 | `Delete(ctx, namespace, key)` | Delete a key by writing a tombstone |
 | `Get(ctx, namespace, key, META, opts)` | Retrieve the value at a key |
 | `Health(ctx)` | Check server health |
-| `List(ctx, namespace, opts)` | List active keys in a namespace |
+| `List(ctx, namespace, opts)` | List active keys in a namespace. Returns an error if the CURSOR value does not correspond to a key that exists in the namespace. |
 | `NamespaceAlter(ctx, name, opts)` | Update namespace configuration (enforce-on-write-only) |
 | `NamespaceCreate(ctx, name, opts)` | Create a new namespace |
 | `NamespaceDrop(ctx, name, FORCE)` | Drop a namespace |
@@ -224,6 +224,7 @@ sentry
 | `PolicyCreate(ctx, name, json)` | Create a new authorization policy |
 | `PolicyDelete(ctx, name)` | Delete a policy |
 | `PolicyGet(ctx, name)` | Get a policy by name |
+| `PolicyHistory(ctx, name)` | Get version history of a policy (all past versions plus current) |
 | `PolicyList(ctx)` | List all policy names |
 | `PolicyUpdate(ctx, name, json)` | Update an existing policy |
 
@@ -238,6 +239,8 @@ Internal certificate authority engine
 | `CaInfo(ctx, name)` | Get CA metadata and key version status |
 | `CaList(ctx)` | List all Certificate Authorities |
 | `CaRotate(ctx, name, opts)` | Rotate CA signing key |
+| `ConfigGet(ctx, key)` | Get a runtime configuration value |
+| `ConfigSet(ctx, key, value)` | Set a runtime configuration value (only scheduler_interval_secs is mutable) |
 | `Inspect(ctx, ca, serial)` | Get certificate details |
 | `Issue(ctx, ca, subject, profile, opts)` | Issue a new certificate. Returns cert + private key (private key never stored). |
 | `IssueFromCsr(ctx, ca, csr_pem, profile, opts)` | Issue a certificate from a PEM-encoded CSR |
@@ -275,7 +278,10 @@ Just-in-time decryption delivery engine
 | `ChannelList(ctx)` | List all channels |
 | `CommandList(ctx)` | List available commands |
 | `Deliver(ctx, json)` | Decrypt recipient and deliver a message |
+| `DeliveryGet(ctx, id)` | Get a delivery receipt by ID |
+| `DeliveryList(ctx, opts)` | List delivery receipts, optionally filtered by channel |
 | `Health(ctx)` | Server health check |
+| `Metrics(ctx)` | Get delivery metrics (total, success, failure counts, per-channel breakdown) |
 | `NotifyEvent(ctx, channel, subject, body)` | Trigger a notification on a pre-configured channel (e.g. rotation/expiry alerts) |
 | `Ping(ctx)` | Connectivity check |
 
@@ -295,6 +301,7 @@ Structured audit event engine
 | `IngestBatch(ctx, events_json)` | Ingest multiple events in a single call |
 | `Ping(ctx)` | Keepalive |
 | `Query(ctx, opts)` | Query events with filter predicates |
+| `Verify(ctx)` | Verify the cryptographic hash chain integrity of all events. Returns the number of verified events or an error if tampering is detected. |
 
 ### `db.Stash`
 

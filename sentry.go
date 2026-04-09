@@ -221,6 +221,25 @@ func (ns *SentryNamespace) PolicyGet(ctx context.Context, name string) (*SentryP
 	return &resp, nil
 }
 
+// PolicyHistory executes POLICY HISTORY — Get version history of a policy (all past versions plus current)
+func (ns *SentryNamespace) PolicyHistory(ctx context.Context, name string) (*SentryPolicyHistoryResponse, error) {
+	args := []string{"POLICY", "HISTORY"}
+	args = append(args, fmt.Sprint(name))
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp SentryPolicyHistoryResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // PolicyList executes POLICY LIST — List all policy names
 func (ns *SentryNamespace) PolicyList(ctx context.Context) (*SentryPolicyListResponse, error) {
 	args := []string{"POLICY", "LIST"}

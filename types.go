@@ -16,6 +16,7 @@ type ShroudbCommandListResponse struct {
 // ShroudbConfigGetResponse is the response from shroudb.ConfigGet().
 type ShroudbConfigGetResponse struct {
 	Key string `json:"key"`
+	Source any `json:"source"`
 	Value any `json:"value"`
 }
 
@@ -628,6 +629,7 @@ type SentryPolicyCreateResponse struct {
 	Name string `json:"name"`
 	Priority int `json:"priority"`
 	Status string `json:"status"`
+	Version int `json:"version"`
 }
 
 // SentryPolicyDeleteResponse is the response from sentry.PolicyDelete().
@@ -637,13 +639,26 @@ type SentryPolicyDeleteResponse struct {
 
 // SentryPolicyGetResponse is the response from sentry.PolicyGet().
 type SentryPolicyGetResponse struct {
+	Action any `json:"action"`
+	Conditions any `json:"conditions"`
 	CreatedAt int `json:"created_at"`
 	Description string `json:"description"`
 	Effect string `json:"effect"`
 	Name string `json:"name"`
+	Principal any `json:"principal"`
 	Priority int `json:"priority"`
+	Resource any `json:"resource"`
 	Status string `json:"status"`
 	UpdatedAt int `json:"updated_at"`
+	Version int `json:"version"`
+}
+
+// SentryPolicyHistoryResponse is the response from sentry.PolicyHistory().
+type SentryPolicyHistoryResponse struct {
+	Count int `json:"count"`
+	Name string `json:"name"`
+	Status string `json:"status"`
+	Versions []any `json:"versions"`
 }
 
 // SentryPolicyListResponse is the response from sentry.PolicyList().
@@ -660,6 +675,7 @@ type SentryPolicyUpdateResponse struct {
 	Priority int `json:"priority"`
 	Status string `json:"status"`
 	UpdatedAt int `json:"updated_at"`
+	Version int `json:"version"`
 }
 
 // SentryKeyRotateOptions contains optional parameters for sentry.KeyRotate().
@@ -701,6 +717,20 @@ type ForgeCaRotateResponse struct {
 	KeyVersion int `json:"key_version"`
 	PreviousVersion int `json:"previous_version"`
 	Rotated bool `json:"rotated"`
+}
+
+// ForgeConfigGetResponse is the response from forge.ConfigGet().
+type ForgeConfigGetResponse struct {
+	Key string `json:"key"`
+	Status string `json:"status"`
+	Value any `json:"value"`
+}
+
+// ForgeConfigSetResponse is the response from forge.ConfigSet().
+type ForgeConfigSetResponse struct {
+	Key string `json:"key"`
+	Status string `json:"status"`
+	Value string `json:"value"`
 }
 
 // ForgeInspectResponse is the response from forge.Inspect().
@@ -898,10 +928,34 @@ type CourierDeliverResponse struct {
 	Status string `json:"status"`
 }
 
+// CourierDeliveryGetResponse is the response from courier.DeliveryGet().
+type CourierDeliveryGetResponse struct {
+	Channel string `json:"channel"`
+	DeliveredAt int `json:"delivered_at"`
+	DeliveryId string `json:"delivery_id"`
+	Error string `json:"error"`
+	Status string `json:"status"`
+}
+
+// CourierDeliveryListResponse is the response from courier.DeliveryList().
+type CourierDeliveryListResponse struct {
+	Count int `json:"count"`
+	Receipts []any `json:"receipts"`
+	Status string `json:"status"`
+}
+
 // CourierHealthResponse is the response from courier.Health().
 type CourierHealthResponse struct {
 	Channels int `json:"channels"`
 	Status string `json:"status"`
+}
+
+// CourierMetricsResponse is the response from courier.Metrics().
+type CourierMetricsResponse struct {
+	Delivered int `json:"delivered"`
+	Failed int `json:"failed"`
+	PerChannel any `json:"per_channel"`
+	TotalDeliveries int `json:"total_deliveries"`
 }
 
 // CourierNotifyEventResponse is the response from courier.NotifyEvent().
@@ -910,6 +964,14 @@ type CourierNotifyEventResponse struct {
 	DeliveredAt int `json:"delivered_at"`
 	DeliveryId string `json:"delivery_id"`
 	Status string `json:"status"`
+}
+
+// CourierDeliveryListOptions contains optional parameters for courier.DeliveryList().
+type CourierDeliveryListOptions struct {
+	// Channel — Filter by channel name
+	Channel *string `json:"CHANNEL,omitempty"`
+	// Limit — Max receipts to return (default 100)
+	Limit *int `json:"LIMIT,omitempty"`
 }
 
 // ChronicleActorsResponse is the response from chronicle.Actors().
@@ -956,6 +1018,13 @@ type ChronicleIngestBatchResponse struct {
 // ChronicleQueryResponse is the response from chronicle.Query().
 type ChronicleQueryResponse struct {
 	Events []any `json:"events"`
+}
+
+// ChronicleVerifyResponse is the response from chronicle.Verify().
+type ChronicleVerifyResponse struct {
+	Status string `json:"status"`
+	Total int `json:"total"`
+	Verified int `json:"verified"`
 }
 
 // ChronicleActorsOptions contains optional parameters for chronicle.Actors().

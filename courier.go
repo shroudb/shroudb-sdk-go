@@ -153,6 +153,51 @@ func (ns *CourierNamespace) Deliver(ctx context.Context, jsonData string) (*Cour
 	return &resp, nil
 }
 
+// DeliveryGet executes DELIVERY GET — Get a delivery receipt by ID
+func (ns *CourierNamespace) DeliveryGet(ctx context.Context, id string) (*CourierDeliveryGetResponse, error) {
+	args := []string{"DELIVERY", "GET"}
+	args = append(args, id)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp CourierDeliveryGetResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// DeliveryList executes DELIVERY LIST — List delivery receipts, optionally filtered by channel
+func (ns *CourierNamespace) DeliveryList(ctx context.Context, opts *CourierDeliveryListOptions) (*CourierDeliveryListResponse, error) {
+	args := []string{"DELIVERY", "LIST"}
+	if opts != nil {
+		if opts.Channel != nil {
+			args = append(args, "CHANNEL", fmt.Sprint(*opts.Channel))
+		}
+		if opts.Limit != nil {
+			args = append(args, "LIMIT", fmt.Sprint(*opts.Limit))
+		}
+	}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp CourierDeliveryListResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Health executes HEALTH — Server health check
 func (ns *CourierNamespace) Health(ctx context.Context) (*CourierHealthResponse, error) {
 	args := []string{"HEALTH"}
@@ -161,6 +206,24 @@ func (ns *CourierNamespace) Health(ctx context.Context) (*CourierHealthResponse,
 		return nil, err
 	}
 	var resp CourierHealthResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// Metrics executes METRICS — Get delivery metrics (total, success, failure counts, per-channel breakdown)
+func (ns *CourierNamespace) Metrics(ctx context.Context) (*CourierMetricsResponse, error) {
+	args := []string{"METRICS"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp CourierMetricsResponse
 	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("marshal response: %w", err)

@@ -132,6 +132,45 @@ func (ns *ForgeNamespace) CaRotate(ctx context.Context, name string, opts *Forge
 	return &resp, nil
 }
 
+// ConfigGet executes CONFIG GET — Get a runtime configuration value
+func (ns *ForgeNamespace) ConfigGet(ctx context.Context, key string) (*ForgeConfigGetResponse, error) {
+	args := []string{"CONFIG", "GET"}
+	args = append(args, key)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ForgeConfigGetResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// ConfigSet executes CONFIG SET — Set a runtime configuration value (only scheduler_interval_secs is mutable)
+func (ns *ForgeNamespace) ConfigSet(ctx context.Context, key string, value string) (*ForgeConfigSetResponse, error) {
+	args := []string{"CONFIG", "SET"}
+	args = append(args, key)
+	args = append(args, value)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ForgeConfigSetResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Inspect executes INSPECT — Get certificate details
 func (ns *ForgeNamespace) Inspect(ctx context.Context, ca string, serial string) (*ForgeInspectResponse, error) {
 	args := []string{"INSPECT"}

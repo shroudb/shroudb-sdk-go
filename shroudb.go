@@ -76,7 +76,7 @@ func (ns *ShroudbNamespace) ConfigGet(ctx context.Context, key string) (*Shroudb
 	return &resp, nil
 }
 
-// ConfigSet executes CONFIG SET — Set a runtime configuration value (admin only)
+// ConfigSet executes CONFIG SET — Set a runtime configuration value (admin only). Only registered config keys are accepted; unknown keys return an error. Values are type-checked against the key's schema (u64, bool, string). Valid keys: max_segment_bytes, max_segment_entries, snapshot_entry_threshold, snapshot_time_threshold_secs.
 func (ns *ShroudbNamespace) ConfigSet(ctx context.Context, key string, value string) error {
 	args := []string{"CONFIG", "SET"}
 	args = append(args, key)
@@ -151,7 +151,7 @@ func (ns *ShroudbNamespace) Health(ctx context.Context) (*ShroudbHealthResponse,
 	return &resp, nil
 }
 
-// List executes LIST — List active keys in a namespace
+// List executes LIST — List active keys in a namespace. Returns an error if the CURSOR value does not correspond to a key that exists in the namespace.
 func (ns *ShroudbNamespace) List(ctx context.Context, namespace string, opts *ShroudbListOptions) (*ShroudbListResponse, error) {
 	args := []string{"LIST"}
 	args = append(args, namespace)
