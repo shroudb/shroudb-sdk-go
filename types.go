@@ -1143,7 +1143,7 @@ type StashRevokeOptions struct {
 
 // StashStoreOptions contains optional parameters for stash.Store().
 type StashStoreOptions struct {
-	// ClientEncrypted — Passthrough mode: value is the wrapped DEK from client-side encryption
+	// ClientEncrypted — Passthrough mode: value is the base64-encoded wrapped DEK from client-side encryption. When validation is enabled (default), the wrapped DEK must be valid base64 decoding to at least 32 bytes, and the blob data must be at least 28 bytes (AES-256-GCM nonce + auth tag).
 	ClientEncrypted *string `json:"client_encrypted,omitempty"`
 	// ContentType — MIME content type
 	ContentType *string `json:"content_type,omitempty"`
