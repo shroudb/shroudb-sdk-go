@@ -885,6 +885,13 @@ type KeepListResponse struct {
 	Paths []any `json:"paths"`
 }
 
+// KeepPurgeResponse is the response from keep.Purge().
+type KeepPurgeResponse struct {
+	Status string `json:"status"`
+	Path string `json:"path"`
+	PurgedAt any `json:"purged_at"`
+}
+
 // KeepPutResponse is the response from keep.Put().
 type KeepPutResponse struct {
 	Status string `json:"status"`

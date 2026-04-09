@@ -147,6 +147,25 @@ func (ns *KeepNamespace) Ping(ctx context.Context) error {
 	return err
 }
 
+// Purge executes PURGE — Permanently remove a secret and all its versions. Irreversible — used for GDPR right-to-erasure compliance. After purge, GET returns not-found (not deleted).
+func (ns *KeepNamespace) Purge(ctx context.Context, path string) (*KeepPurgeResponse, error) {
+	args := []string{"PURGE"}
+	args = append(args, fmt.Sprint(path))
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp KeepPurgeResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Put executes PUT — Store a new version of a secret. Creates the secret if it doesn't exist. Undeletes if soft-deleted.
 func (ns *KeepNamespace) Put(ctx context.Context, path string, value []byte) (*KeepPutResponse, error) {
 	args := []string{"PUT"}

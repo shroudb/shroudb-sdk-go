@@ -248,6 +248,7 @@ resp, err := db.Forge.CaInfo(ctx, "name")
 | `Health` | `ctx` | `*KeepHealthResponse, error` | Health check. |
 | `List` | `ctx, prefix?` | `*KeepListResponse, error` | List secret paths, optionally filtered by prefix. Excludes deleted secrets. |
 | `Ping` | `ctx` | `error` | Ping-pong. |
+| `Purge` | `ctx, path` | `*KeepPurgeResponse, error` | Permanently remove a secret and all its versions. Irreversible — used for GDPR right-to-erasure compliance. After purge, GET returns not-found (not deleted). |
 | `Put` | `ctx, path, value` | `*KeepPutResponse, error` | Store a new version of a secret. Creates the secret if it doesn't exist. Undeletes if soft-deleted. |
 | `Rotate` | `ctx, path` | `*KeepRotateResponse, error` | Re-encrypt the latest version with a new nonce. Creates a new version with the same plaintext. |
 | `Versions` | `ctx, path` | `*KeepVersionsResponse, error` | Get version history for a secret. Includes deleted secrets. |
