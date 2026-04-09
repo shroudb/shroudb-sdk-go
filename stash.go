@@ -92,6 +92,25 @@ func (ns *StashNamespace) Revoke(ctx context.Context, id string, opts *StashRevo
 	return &resp, nil
 }
 
+// Rewrap executes REWRAP — Re-wrap a blob's DEK under the current Cipher key version. The blob ciphertext is not re-encrypted — only the key wrapping changes.
+func (ns *StashNamespace) Rewrap(ctx context.Context, id string) (*StashRewrapResponse, error) {
+	args := []string{"REWRAP"}
+	args = append(args, id)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp StashRewrapResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Store executes STORE — Store an encrypted blob
 func (ns *StashNamespace) Store(ctx context.Context, id string, data_b64 string, opts *StashStoreOptions) (*StashStoreResponse, error) {
 	args := []string{"STORE"}

@@ -1076,6 +1076,14 @@ type StashRevokeResponse struct {
 	Status string `json:"status"`
 }
 
+// StashRewrapResponse is the response from stash.Rewrap().
+type StashRewrapResponse struct {
+	Id string `json:"id"`
+	KeyVersion int `json:"key_version"`
+	Status string `json:"status"`
+	UpdatedAt int `json:"updated_at"`
+}
+
 // StashStoreResponse is the response from stash.Store().
 type StashStoreResponse struct {
 	ClientEncrypted bool `json:"client_encrypted"`

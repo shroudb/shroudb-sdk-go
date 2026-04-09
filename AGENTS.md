@@ -326,6 +326,7 @@ resp, err := db.Chronicle.IngestBatch(ctx, map[string]any{})
 | `Ping` | `ctx` | `error` | Ping-pong |
 | `Retrieve` | `ctx, id` | `error` | Retrieve and decrypt a blob |
 | `Revoke` | `ctx, id, opts` | `*StashRevokeResponse, error` | Revoke a blob (hard crypto-shred by default, SOFT for soft revoke) |
+| `Rewrap` | `ctx, id` | `*StashRewrapResponse, error` | Re-wrap a blob's DEK under the current Cipher key version. The blob ciphertext is not re-encrypted — only the key wrapping changes. |
 | `Store` | `ctx, id, data_b64, opts` | `*StashStoreResponse, error` | Store an encrypted blob |
 
 ### Examples
