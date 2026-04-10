@@ -1164,6 +1164,8 @@ type StashRewrapResponse struct {
 // StashStoreResponse is the response from stash.Store().
 type StashStoreResponse struct {
 	ClientEncrypted bool `json:"client_encrypted"`
+	ContentHash any `json:"content_hash"`
+	Deduplicated bool `json:"deduplicated"`
 	EncryptedSize int `json:"encrypted_size"`
 	Id string `json:"id"`
 	KeyVersion int `json:"key_version"`
