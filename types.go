@@ -375,6 +375,13 @@ type SigilPasswordResetResponse struct {
 	Status string `json:"status"`
 }
 
+// SigilSchemaAlterResponse is the response from sigil.SchemaAlter().
+type SigilSchemaAlterResponse struct {
+	Fields int `json:"fields"`
+	Name string `json:"name"`
+	Version int `json:"version"`
+}
+
 // SigilSchemaGetResponse is the response from sigil.SchemaGet().
 type SigilSchemaGetResponse struct {
 	Schema any `json:"schema"`
@@ -466,6 +473,14 @@ type SigilCredentialImportOptions struct {
 // SigilPasswordImportOptions contains optional parameters for sigil.PasswordImport().
 type SigilPasswordImportOptions struct {
 	Meta any `json:"meta,omitempty"`
+}
+
+// SigilSchemaAlterOptions contains optional parameters for sigil.SchemaAlter().
+type SigilSchemaAlterOptions struct {
+	// FieldJson — FieldDef JSON (for ADD)
+	FieldJson any `json:"field_json,omitempty"`
+	// FieldName — Field name to remove (for REMOVE)
+	FieldName *string `json:"field_name,omitempty"`
 }
 
 // SigilSessionCreateOptions contains optional parameters for sigil.SessionCreate().

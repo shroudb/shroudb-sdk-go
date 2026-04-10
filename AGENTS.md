@@ -117,6 +117,7 @@ resp, err := db.Cipher.GenerateDataKey(ctx, "my-keyring")
 | `PasswordChange` | `ctx, schema, id, old, new` | `*SigilPasswordChangeResponse, error` | Sugar: change password. Infers credential field from schema. Equivalent to CREDENTIAL CHANGE with implicit field. |
 | `PasswordImport` | `ctx, schema, id, hash, opts` | `*SigilPasswordImportResponse, error` | Sugar: import pre-hashed password. Infers credential field from schema. Equivalent to CREDENTIAL IMPORT with implicit field. |
 | `PasswordReset` | `ctx, schema, id, new` | `*SigilPasswordResetResponse, error` | Sugar: force-reset password. Infers credential field from schema. Equivalent to CREDENTIAL RESET with implicit field. |
+| `SchemaAlter` | `ctx, name, action, opts` | `*SigilSchemaAlterResponse, error` | Add or remove fields from a schema, producing a new version. Added fields are optional (required=false). Existing envelopes remain readable. |
 | `SchemaGet` | `ctx, name` | `*SigilSchemaGetResponse, error` | Get a schema definition by name |
 | `SchemaList` | `ctx` | `*SigilSchemaListResponse, error` | List all registered schema names |
 | `SchemaRegister` | `ctx, name, json` | `*SigilSchemaRegisterResponse, error` | Register a credential envelope schema |

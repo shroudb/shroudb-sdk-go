@@ -362,6 +362,37 @@ func (ns *SigilNamespace) PasswordReset(ctx context.Context, schema string, id s
 	return &resp, nil
 }
 
+// SchemaAlter executes SCHEMA ALTER — Add or remove fields from a schema, producing a new version. Added fields are optional (required=false). Existing envelopes remain readable.
+func (ns *SigilNamespace) SchemaAlter(ctx context.Context, name string, action string, opts *SigilSchemaAlterOptions) (*SigilSchemaAlterResponse, error) {
+	args := []string{"SCHEMA", "ALTER"}
+	args = append(args, name)
+	args = append(args, action)
+	if opts != nil {
+		if opts.FieldJson != nil {
+			jsonBytes, err := json.Marshal(opts.FieldJson)
+			if err == nil {
+				args = append(args, "FIELD_JSON", string(jsonBytes))
+			}
+		}
+		if opts.FieldName != nil {
+			args = append(args, "FIELD_NAME", fmt.Sprint(*opts.FieldName))
+		}
+	}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp SigilSchemaAlterResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // SchemaGet executes SCHEMA GET — Get a schema definition by name
 func (ns *SigilNamespace) SchemaGet(ctx context.Context, name string) (*SigilSchemaGetResponse, error) {
 	args := []string{"SCHEMA", "GET"}
