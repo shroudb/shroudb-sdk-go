@@ -1108,6 +1108,14 @@ type StashInspectResponse struct {
 	ViewerCount int `json:"viewer_count"`
 }
 
+// StashListResponse is the response from stash.List().
+type StashListResponse struct {
+	Blobs []any `json:"blobs"`
+	Count int `json:"count"`
+	Status string `json:"status"`
+	Tenant string `json:"tenant"`
+}
+
 // StashRevokeResponse is the response from stash.Revoke().
 type StashRevokeResponse struct {
 	Id string `json:"id"`
@@ -1133,6 +1141,12 @@ type StashStoreResponse struct {
 	PlaintextSize int `json:"plaintext_size"`
 	S3Key string `json:"s3_key"`
 	Status string `json:"status"`
+}
+
+// StashListOptions contains optional parameters for stash.List().
+type StashListOptions struct {
+	// Limit — Maximum number of blobs to return (default: 100)
+	Limit *int `json:"limit,omitempty"`
 }
 
 // StashRevokeOptions contains optional parameters for stash.Revoke().

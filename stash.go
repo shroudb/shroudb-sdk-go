@@ -53,6 +53,29 @@ func (ns *StashNamespace) Inspect(ctx context.Context, id string) (*StashInspect
 	return &resp, nil
 }
 
+// List executes LIST — List blobs for the current tenant
+func (ns *StashNamespace) List(ctx context.Context, opts *StashListOptions) (*StashListResponse, error) {
+	args := []string{"LIST"}
+	if opts != nil {
+		if opts.Limit != nil {
+			args = append(args, "LIMIT", fmt.Sprint(*opts.Limit))
+		}
+	}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp StashListResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Ping executes PING — Ping-pong
 func (ns *StashNamespace) Ping(ctx context.Context) error {
 	args := []string{"PING"}

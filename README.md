@@ -317,6 +317,7 @@ Encrypted blob storage with S3 backend and envelope encryption
 | `Command(ctx)` | List supported commands |
 | `Health(ctx)` | Health check |
 | `Inspect(ctx, id)` | Read blob metadata without downloading or decrypting |
+| `List(ctx, opts)` | List blobs for the current tenant |
 | `Ping(ctx)` | Ping-pong |
 | `Retrieve(ctx, id)` | Retrieve and decrypt a blob |
 | `Revoke(ctx, id, opts)` | Revoke a blob (hard crypto-shred by default, SOFT for soft revoke) |

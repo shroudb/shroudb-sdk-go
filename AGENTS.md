@@ -328,6 +328,7 @@ resp, err := db.Chronicle.IngestBatch(ctx, map[string]any{})
 | `Command` | `ctx` | `error` | List supported commands |
 | `Health` | `ctx` | `error` | Health check |
 | `Inspect` | `ctx, id` | `*StashInspectResponse, error` | Read blob metadata without downloading or decrypting |
+| `List` | `ctx, opts` | `*StashListResponse, error` | List blobs for the current tenant |
 | `Ping` | `ctx` | `error` | Ping-pong |
 | `Retrieve` | `ctx, id` | `error` | Retrieve and decrypt a blob |
 | `Revoke` | `ctx, id, opts` | `*StashRevokeResponse, error` | Revoke a blob (hard crypto-shred by default, SOFT for soft revoke) |
