@@ -328,6 +328,7 @@ resp, err := db.Chronicle.IngestBatch(ctx, map[string]any{})
 | Method | Args | Returns | Description |
 |--------|------|---------|-------------|
 | `Command` | `ctx` | `error` | List supported commands |
+| `Fingerprint` | `ctx, id, viewer_id, opts` | `*StashFingerprintResponse, error` | Create a viewer-specific encrypted copy of a blob for leak tracing |
 | `Health` | `ctx` | `error` | Health check |
 | `Inspect` | `ctx, id` | `*StashInspectResponse, error` | Read blob metadata without downloading or decrypting |
 | `List` | `ctx, opts` | `*StashListResponse, error` | List blobs for the current tenant |
@@ -336,16 +337,17 @@ resp, err := db.Chronicle.IngestBatch(ctx, map[string]any{})
 | `Revoke` | `ctx, id, opts` | `*StashRevokeResponse, error` | Revoke a blob (hard crypto-shred by default, SOFT for soft revoke) |
 | `Rewrap` | `ctx, id` | `*StashRewrapResponse, error` | Re-wrap a blob's DEK under the current Cipher key version. The blob ciphertext is not re-encrypted — only the key wrapping changes. |
 | `Store` | `ctx, id, data_b64, opts` | `*StashStoreResponse, error` | Store an encrypted blob |
+| `Trace` | `ctx, id` | `*StashTraceResponse, error` | Return the viewer map (who has copies) for a blob |
 
 ### Examples
 
 ```go
 ctx := context.Background()
+resp, err := db.Stash.Fingerprint(ctx, "alice", "viewer_id")
+// resp.CreatedAt
 resp, err := db.Stash.Inspect(ctx, "alice")
 // resp.BlobStatus
 err := db.Stash.Retrieve(ctx, "alice")
-resp, err := db.Stash.Revoke(ctx, "alice")
-// resp.Id
 ```
 
 ## Error Handling
@@ -407,7 +409,9 @@ if err != nil {
 | `ADAPTER` | `ErrADAPTER` | Delivery adapter failure |
 | `DECRYPT` | `ErrDECRYPT` | Cipher decryption failed |
 | `CIPHER_UNAVAILABLE` | `ErrCIPHER_UNAVAILABLE` | Cipher engine not available for envelope encryption |
+| `CLIENT_ENCRYPTED` | `ErrCLIENT_ENCRYPTED` | Cannot fingerprint a client-encrypted blob (client manages encryption) |
 | `CRYPTO` | `ErrCRYPTO` | Encryption or decryption failed |
+| `DUPLICATE_VIEWER` | `ErrDUPLICATE_VIEWER` | Viewer already has a fingerprinted copy of this blob |
 | `INVALID_ARGUMENT` | `ErrINVALID_ARGUMENT` | Invalid argument |
 | `OBJECT_STORE` | `ErrOBJECT_STORE` | S3 object store operation failed |
 | `REVOKED` | `ErrREVOKED` | Blob has been soft-revoked |

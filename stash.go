@@ -27,6 +27,31 @@ func (ns *StashNamespace) Command(ctx context.Context) error {
 	return err
 }
 
+// Fingerprint executes FINGERPRINT — Create a viewer-specific encrypted copy of a blob for leak tracing
+func (ns *StashNamespace) Fingerprint(ctx context.Context, id string, viewer_id string, opts *StashFingerprintOptions) (*StashFingerprintResponse, error) {
+	args := []string{"FINGERPRINT"}
+	args = append(args, id)
+	args = append(args, viewer_id)
+	if opts != nil {
+		if opts.Params != nil {
+			args = append(args, "PARAMS", fmt.Sprint(*opts.Params))
+		}
+	}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp StashFingerprintResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Health executes HEALTH — Health check
 func (ns *StashNamespace) Health(ctx context.Context) error {
 	args := []string{"HEALTH"}
@@ -155,6 +180,25 @@ func (ns *StashNamespace) Store(ctx context.Context, id string, data_b64 string,
 		return nil, err
 	}
 	var resp StashStoreResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// Trace executes TRACE — Return the viewer map (who has copies) for a blob
+func (ns *StashNamespace) Trace(ctx context.Context, id string) (*StashTraceResponse, error) {
+	args := []string{"TRACE"}
+	args = append(args, id)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp StashTraceResponse
 	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("marshal response: %w", err)

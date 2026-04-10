@@ -1114,6 +1114,14 @@ type ChronicleQueryOptions struct {
 	FilterArgs *any `json:"filter_args,omitempty"`
 }
 
+// StashFingerprintResponse is the response from stash.Fingerprint().
+type StashFingerprintResponse struct {
+	CreatedAt int `json:"created_at"`
+	S3Key string `json:"s3_key"`
+	Status string `json:"status"`
+	ViewerId string `json:"viewer_id"`
+}
+
 // StashInspectResponse is the response from stash.Inspect().
 type StashInspectResponse struct {
 	BlobStatus string `json:"blob_status"`
@@ -1163,6 +1171,21 @@ type StashStoreResponse struct {
 	PlaintextSize int `json:"plaintext_size"`
 	S3Key string `json:"s3_key"`
 	Status string `json:"status"`
+}
+
+// StashTraceResponse is the response from stash.Trace().
+type StashTraceResponse struct {
+	BlobStatus string `json:"blob_status"`
+	Id string `json:"id"`
+	Status string `json:"status"`
+	ViewerCount int `json:"viewer_count"`
+	Viewers []any `json:"viewers"`
+}
+
+// StashFingerprintOptions contains optional parameters for stash.Fingerprint().
+type StashFingerprintOptions struct {
+	// Params — JSON string of fingerprint parameters passed to the processor
+	Params *string `json:"params,omitempty"`
 }
 
 // StashListOptions contains optional parameters for stash.List().

@@ -317,6 +317,7 @@ Encrypted blob storage with S3 backend and envelope encryption
 | Method | Description |
 |--------|-------------|
 | `Command(ctx)` | List supported commands |
+| `Fingerprint(ctx, id, viewer_id, opts)` | Create a viewer-specific encrypted copy of a blob for leak tracing |
 | `Health(ctx)` | Health check |
 | `Inspect(ctx, id)` | Read blob metadata without downloading or decrypting |
 | `List(ctx, opts)` | List blobs for the current tenant |
@@ -325,6 +326,7 @@ Encrypted blob storage with S3 backend and envelope encryption
 | `Revoke(ctx, id, opts)` | Revoke a blob (hard crypto-shred by default, SOFT for soft revoke) |
 | `Rewrap(ctx, id)` | Re-wrap a blob's DEK under the current Cipher key version. The blob ciphertext is not re-encrypted — only the key wrapping changes. |
 | `Store(ctx, id, data_b64, opts)` | Store an encrypted blob |
+| `Trace(ctx, id)` | Return the viewer map (who has copies) for a blob |
 
 ## Error Handling
 

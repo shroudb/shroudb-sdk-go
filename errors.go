@@ -41,6 +41,8 @@ const (
 	ErrCAPABILITY_MISSING = "CAPABILITY_MISSING"
 	// ErrCIPHER_UNAVAILABLE — Cipher engine not available for envelope encryption
 	ErrCIPHER_UNAVAILABLE = "CIPHER_UNAVAILABLE"
+	// ErrCLIENT_ENCRYPTED — Cannot fingerprint a client-encrypted blob (client manages encryption)
+	ErrCLIENT_ENCRYPTED = "CLIENT_ENCRYPTED"
 	// ErrCRYPTO — Encryption or decryption failed
 	ErrCRYPTO = "CRYPTO"
 	// ErrDECRYPT — Cipher decryption failed
@@ -51,6 +53,8 @@ const (
 	ErrDENIED = "DENIED"
 	// ErrDISABLED — Keyring is disabled
 	ErrDISABLED = "DISABLED"
+	// ErrDUPLICATE_VIEWER — Viewer already has a fingerprinted copy of this blob
+	ErrDUPLICATE_VIEWER = "DUPLICATE_VIEWER"
 	// ErrENCRYPTION — Encryption or decryption failed
 	ErrENCRYPTION = "ENCRYPTION"
 	// ErrENTITY_EXISTS — Entity already exists
