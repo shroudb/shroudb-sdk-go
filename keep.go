@@ -186,6 +186,25 @@ func (ns *KeepNamespace) Put(ctx context.Context, path string, value []byte) (*K
 	return &resp, nil
 }
 
+// Rekey executes REKEY — Re-encrypt all secrets with a new master key. Iterates all secrets (including deleted ones), decrypts every version with the current master key, re-encrypts with the new key, and switches to the new key for all future operations.
+func (ns *KeepNamespace) Rekey(ctx context.Context, new_key string) (*KeepRekeyResponse, error) {
+	args := []string{"REKEY"}
+	args = append(args, new_key)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp KeepRekeyResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Rotate executes ROTATE — Re-encrypt the latest version with a new nonce. Creates a new version with the same plaintext.
 func (ns *KeepNamespace) Rotate(ctx context.Context, path string) (*KeepRotateResponse, error) {
 	args := []string{"ROTATE"}

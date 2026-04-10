@@ -268,6 +268,7 @@ Secrets manager with path-based access control and versioning
 | `Ping(ctx)` | Ping-pong. |
 | `Purge(ctx, path)` | Permanently remove a secret and all its versions. Irreversible — used for GDPR right-to-erasure compliance. After purge, GET returns not-found (not deleted). |
 | `Put(ctx, path, value)` | Store a new version of a secret. Creates the secret if it doesn't exist. Undeletes if soft-deleted. |
+| `Rekey(ctx, new_key)` | Re-encrypt all secrets with a new master key. Iterates all secrets (including deleted ones), decrypts every version with the current master key, re-encrypts with the new key, and switches to the new key for all future operations. |
 | `Rotate(ctx, path)` | Re-encrypt the latest version with a new nonce. Creates a new version with the same plaintext. |
 | `Versions(ctx, path)` | Get version history for a secret. Includes deleted secrets. |
 

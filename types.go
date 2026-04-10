@@ -914,6 +914,13 @@ type KeepPutResponse struct {
 	Version int `json:"version"`
 }
 
+// KeepRekeyResponse is the response from keep.Rekey().
+type KeepRekeyResponse struct {
+	Status string `json:"status"`
+	RekeyedSecrets int `json:"rekeyed_secrets"`
+	RekeyedVersions int `json:"rekeyed_versions"`
+}
+
 // KeepRotateResponse is the response from keep.Rotate().
 type KeepRotateResponse struct {
 	Status string `json:"status"`
