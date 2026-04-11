@@ -454,7 +454,7 @@ func (ns *SigilNamespace) SchemaRegister(ctx context.Context, name string, jsonD
 	return &resp, nil
 }
 
-// SessionCreate executes SESSION CREATE — Verify credentials and issue access + refresh tokens
+// SessionCreate executes SESSION CREATE — Verify credentials and issue access + refresh tokens. Fields annotated with claim=true are auto-included in the JWT from the entity's envelope. Enriched claim values override caller-provided META for the same key.
 func (ns *SigilNamespace) SessionCreate(ctx context.Context, schema string, id string, password string, opts *SigilSessionCreateOptions) (*SigilSessionCreateResponse, error) {
 	args := []string{"SESSION", "CREATE"}
 	args = append(args, schema)
@@ -503,7 +503,7 @@ func (ns *SigilNamespace) SessionList(ctx context.Context, schema string, id str
 	return &resp, nil
 }
 
-// SessionRefresh executes SESSION REFRESH — Rotate refresh token and issue new access token
+// SessionRefresh executes SESSION REFRESH — Rotate refresh token and issue new access token. Fields annotated with claim=true are re-read from the entity's current envelope, so refreshed tokens reflect the latest values (e.g. role changes).
 func (ns *SigilNamespace) SessionRefresh(ctx context.Context, schema string, token string) (*SigilSessionRefreshResponse, error) {
 	args := []string{"SESSION", "REFRESH"}
 	args = append(args, schema)

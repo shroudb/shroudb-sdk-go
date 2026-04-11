@@ -180,9 +180,9 @@ Schema-driven credential envelope engine
 | `SchemaGet(ctx, name)` | Get a schema definition by name |
 | `SchemaList(ctx)` | List all registered schema names |
 | `SchemaRegister(ctx, name, json)` | Register a credential envelope schema |
-| `SessionCreate(ctx, schema, id, password, opts)` | Verify credentials and issue access + refresh tokens |
+| `SessionCreate(ctx, schema, id, password, opts)` | Verify credentials and issue access + refresh tokens. Fields annotated with claim=true are auto-included in the JWT from the entity's envelope. Enriched claim values override caller-provided META for the same key. |
 | `SessionList(ctx, schema, id)` | List active sessions for an entity |
-| `SessionRefresh(ctx, schema, token)` | Rotate refresh token and issue new access token |
+| `SessionRefresh(ctx, schema, token)` | Rotate refresh token and issue new access token. Fields annotated with claim=true are re-read from the entity's current envelope, so refreshed tokens reflect the latest values (e.g. role changes). |
 | `SessionRevoke(ctx, schema, token)` | Revoke a single refresh token (logout one session) |
 | `SessionRevokeAll(ctx, schema, id)` | Revoke all sessions for an entity (logout everywhere) |
 | `UserCreate(ctx, schema, id, json)` | Sugar: create an envelope. Equivalent to ENVELOPE CREATE. |

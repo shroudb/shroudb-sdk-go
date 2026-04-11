@@ -123,9 +123,9 @@ resp, err := db.Cipher.GenerateDataKey(ctx, "my-keyring")
 | `SchemaGet` | `ctx, name` | `*SigilSchemaGetResponse, error` | Get a schema definition by name |
 | `SchemaList` | `ctx` | `*SigilSchemaListResponse, error` | List all registered schema names |
 | `SchemaRegister` | `ctx, name, json` | `*SigilSchemaRegisterResponse, error` | Register a credential envelope schema |
-| `SessionCreate` | `ctx, schema, id, password, opts` | `*SigilSessionCreateResponse, error` | Verify credentials and issue access + refresh tokens |
+| `SessionCreate` | `ctx, schema, id, password, opts` | `*SigilSessionCreateResponse, error` | Verify credentials and issue access + refresh tokens. Fields annotated with claim=true are auto-included in the JWT from the entity's envelope. Enriched claim values override caller-provided META for the same key. |
 | `SessionList` | `ctx, schema, id` | `*SigilSessionListResponse, error` | List active sessions for an entity |
-| `SessionRefresh` | `ctx, schema, token` | `*SigilSessionRefreshResponse, error` | Rotate refresh token and issue new access token |
+| `SessionRefresh` | `ctx, schema, token` | `*SigilSessionRefreshResponse, error` | Rotate refresh token and issue new access token. Fields annotated with claim=true are re-read from the entity's current envelope, so refreshed tokens reflect the latest values (e.g. role changes). |
 | `SessionRevoke` | `ctx, schema, token` | `*SigilSessionRevokeResponse, error` | Revoke a single refresh token (logout one session) |
 | `SessionRevokeAll` | `ctx, schema, id` | `*SigilSessionRevokeAllResponse, error` | Revoke all sessions for an entity (logout everywhere) |
 | `UserCreate` | `ctx, schema, id, json` | `*SigilUserCreateResponse, error` | Sugar: create an envelope. Equivalent to ENVELOPE CREATE. |
