@@ -128,6 +128,8 @@ Encrypted key-value database
 | `Ping(ctx)` | Test connectivity |
 | `Pipeline(ctx, count)` | Execute commands atomically (all succeed or all roll back) |
 | `Put(ctx, namespace, key, value, opts)` | Store a value at the given key. Auto-increments version. |
+| `Rekey(ctx)` | Begin online rekey (zero-downtime master key rotation) |
+| `RekeyStatus(ctx)` | Query progress of an in-flight rekey operation |
 | `Subscribe(ctx, namespace, opts)` | Subscribe to change events on a namespace |
 | `Unsubscribe(ctx)` | End the current subscription |
 | `Versions(ctx, namespace, key, opts)` | Retrieve version history for a key (most recent first) |

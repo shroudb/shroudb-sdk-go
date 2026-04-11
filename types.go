@@ -73,6 +73,20 @@ type ShroudbPutResponse struct {
 	Version int `json:"version"`
 }
 
+// ShroudbRekeyResponse is the response from shroudb.Rekey().
+type ShroudbRekeyResponse struct {
+	Message string `json:"message"`
+}
+
+// ShroudbRekeyStatusResponse is the response from shroudb.RekeyStatus().
+type ShroudbRekeyStatusResponse struct {
+	InProgress bool `json:"in_progress"`
+	Progress string `json:"progress"`
+	SegmentsCompleted int `json:"segments_completed"`
+	StartedAt int `json:"started_at"`
+	TotalSegments int `json:"total_segments"`
+}
+
 // ShroudbVersionsResponse is the response from shroudb.Versions().
 type ShroudbVersionsResponse struct {
 	Versions []any `json:"versions"`

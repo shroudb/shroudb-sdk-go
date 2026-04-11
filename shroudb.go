@@ -357,6 +357,42 @@ func (ns *ShroudbNamespace) Put(ctx context.Context, namespace string, key strin
 	return &resp, nil
 }
 
+// Rekey executes REKEY — Begin online rekey (zero-downtime master key rotation)
+func (ns *ShroudbNamespace) Rekey(ctx context.Context) (*ShroudbRekeyResponse, error) {
+	args := []string{"REKEY"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ShroudbRekeyResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// RekeyStatus executes REKEY STATUS — Query progress of an in-flight rekey operation
+func (ns *ShroudbNamespace) RekeyStatus(ctx context.Context) (*ShroudbRekeyStatusResponse, error) {
+	args := []string{"REKEY", "STATUS"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ShroudbRekeyStatusResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Subscribe executes SUBSCRIBE — Subscribe to change events on a namespace
 func (ns *ShroudbNamespace) Subscribe(ctx context.Context, namespace string, opts *ShroudbSubscribeOptions) error {
 	args := []string{"SUBSCRIBE"}

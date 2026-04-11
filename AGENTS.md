@@ -52,6 +52,8 @@ defer db.Close()
 | `Ping` | `ctx` | `*ShroudbPingResponse, error` | Test connectivity |
 | `Pipeline` | `ctx, count` | `error` | Execute commands atomically (all succeed or all roll back) |
 | `Put` | `ctx, namespace, key, value?, opts` | `*ShroudbPutResponse, error` | Store a value at the given key. Auto-increments version. |
+| `Rekey` | `ctx` | `*ShroudbRekeyResponse, error` | Begin online rekey (zero-downtime master key rotation) |
+| `RekeyStatus` | `ctx` | `*ShroudbRekeyStatusResponse, error` | Query progress of an in-flight rekey operation |
 | `Subscribe` | `ctx, namespace, opts` | `error` | Subscribe to change events on a namespace |
 | `Unsubscribe` | `ctx` | `error` | End the current subscription |
 | `Versions` | `ctx, namespace, key, opts` | `*ShroudbVersionsResponse, error` | Retrieve version history for a key (most recent first) |
