@@ -25,6 +25,7 @@ func (ns *ForgeNamespace) CaCreate(ctx context.Context, name string, algorithm s
 	args := []string{"CA", "CREATE"}
 	args = append(args, fmt.Sprint(name))
 	args = append(args, fmt.Sprint(algorithm))
+	args = append(args, "SUBJECT")
 	args = append(args, fmt.Sprint(subject))
 	if opts != nil {
 		if opts.TtlDays != nil {

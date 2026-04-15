@@ -366,6 +366,7 @@ func (ns *SigilNamespace) PasswordReset(ctx context.Context, schema string, id s
 func (ns *SigilNamespace) SchemaAlter(ctx context.Context, name string, action string, opts *SigilSchemaAlterOptions) (*SigilSchemaAlterResponse, error) {
 	args := []string{"SCHEMA", "ALTER"}
 	args = append(args, name)
+	args = append(args, "ADD")
 	args = append(args, action)
 	if opts != nil {
 		if opts.FieldJson != nil {
