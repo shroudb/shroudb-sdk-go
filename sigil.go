@@ -95,7 +95,7 @@ func (ns *SigilNamespace) CredentialReset(ctx context.Context, schema string, id
 	return &resp, nil
 }
 
-// EnvelopeCreate executes ENVELOPE CREATE — Create an envelope with field routing per schema annotations
+// EnvelopeCreate executes ENVELOPE CREATE — Create an envelope with field routing per schema kind
 func (ns *SigilNamespace) EnvelopeCreate(ctx context.Context, schema string, id string, jsonData any) (*SigilEnvelopeCreateResponse, error) {
 	args := []string{"ENVELOPE", "CREATE"}
 	args = append(args, schema)

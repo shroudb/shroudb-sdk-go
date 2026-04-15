@@ -27,7 +27,7 @@ func IsCode(err error, code string) bool {
 
 // Known ShrouDB error codes.
 const (
-	// ErrACCOUNT_LOCKED — Account locked after too many failed attempts. Only emitted for credential fields with the default lockout=true annotation.
+	// ErrACCOUNT_LOCKED — Account locked after too many failed attempts. Only emitted for credential fields whose CredentialPolicy carries a non-null LockoutPolicy.
 	ErrACCOUNT_LOCKED = "ACCOUNT_LOCKED"
 	// ErrADAPTER — Delivery adapter failure
 	ErrADAPTER = "ADAPTER"

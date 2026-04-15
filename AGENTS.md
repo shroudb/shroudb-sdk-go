@@ -107,7 +107,7 @@ resp, err := db.Cipher.GenerateDataKey(ctx, "my-keyring")
 | `CredentialChange` | `ctx, schema, id, field, old, new` | `*SigilCredentialChangeResponse, error` | Change a credential field (requires old value for verification) |
 | `CredentialImport` | `ctx, schema, id, field, hash, opts` | `*SigilCredentialImportResponse, error` | Import a pre-hashed credential (bcrypt, scrypt, argon2). Transparently rehashed to Argon2id on next verify. |
 | `CredentialReset` | `ctx, schema, id, field, new` | `*SigilCredentialResetResponse, error` | Force-reset a credential field without requiring old value (admin/reset token) |
-| `EnvelopeCreate` | `ctx, schema, id, json` | `*SigilEnvelopeCreateResponse, error` | Create an envelope with field routing per schema annotations |
+| `EnvelopeCreate` | `ctx, schema, id, json` | `*SigilEnvelopeCreateResponse, error` | Create an envelope with field routing per schema kind |
 | `EnvelopeDelete` | `ctx, schema, id` | `*SigilEnvelopeDeleteResponse, error` | Delete an envelope and all associated data |
 | `EnvelopeGet` | `ctx, schema, id` | `*SigilEnvelopeGetResponse, error` | Get an envelope record |
 | `EnvelopeImport` | `ctx, schema, id, json` | `*SigilEnvelopeImportResponse, error` | Import an envelope with pre-hashed credential fields. Non-credential fields processed normally. |
@@ -388,7 +388,7 @@ if err != nil {
 | `POLICY` | `ErrPOLICY` | Operation denied by keyring policy |
 | `RETIRED` | `ErrRETIRED` | Key version is retired — use REWRAP |
 | `WRONGTYPE` | `ErrWRONGTYPE` | Operation not supported for this keyring type |
-| `ACCOUNT_LOCKED` | `ErrACCOUNT_LOCKED` | Account locked after too many failed attempts. Only emitted for credential fields with the default lockout=true annotation. |
+| `ACCOUNT_LOCKED` | `ErrACCOUNT_LOCKED` | Account locked after too many failed attempts. Only emitted for credential fields whose CredentialPolicy carries a non-null LockoutPolicy. |
 | `CAPABILITY_MISSING` | `ErrCAPABILITY_MISSING` | Required engine capability not available (e.g., Cipher for PII fields) |
 | `ENTITY_EXISTS` | `ErrENTITY_EXISTS` | Entity already exists |
 | `ENTITY_NOT_FOUND` | `ErrENTITY_NOT_FOUND` | Entity does not exist |
