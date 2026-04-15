@@ -1051,7 +1051,8 @@ type CourierDeliveryListOptions struct {
 
 // ChronicleActorsResponse is the response from chronicle.Actors().
 type ChronicleActorsResponse struct {
-	Entries []any `json:"entries"`
+	Actors []any `json:"actors"`
+	Status string `json:"status"`
 }
 
 // ChronicleAuthResponse is the response from chronicle.Auth().
@@ -1059,24 +1060,34 @@ type ChronicleAuthResponse struct {
 	Status string `json:"status"`
 }
 
+// ChronicleCommandListResponse is the response from chronicle.CommandList().
+type ChronicleCommandListResponse struct {
+	Commands []any `json:"commands"`
+}
+
 // ChronicleCountResponse is the response from chronicle.Count().
 type ChronicleCountResponse struct {
 	Count int `json:"count"`
+	Scanned int `json:"scanned"`
+	Status string `json:"status"`
 }
 
 // ChronicleErrorsResponse is the response from chronicle.Errors().
 type ChronicleErrorsResponse struct {
-	Entries []any `json:"entries"`
+	Errors []any `json:"errors"`
+	Status string `json:"status"`
 }
 
 // ChronicleHealthResponse is the response from chronicle.Health().
 type ChronicleHealthResponse struct {
+	Events int `json:"events"`
 	Status string `json:"status"`
 }
 
 // ChronicleHotspotsResponse is the response from chronicle.Hotspots().
 type ChronicleHotspotsResponse struct {
-	Entries []any `json:"entries"`
+	Hotspots []any `json:"hotspots"`
+	Status string `json:"status"`
 }
 
 // ChronicleIngestResponse is the response from chronicle.Ingest().
@@ -1093,10 +1104,14 @@ type ChronicleIngestBatchResponse struct {
 // ChronicleQueryResponse is the response from chronicle.Query().
 type ChronicleQueryResponse struct {
 	Events []any `json:"events"`
+	Matched int `json:"matched"`
+	Scanned int `json:"scanned"`
+	Status string `json:"status"`
 }
 
 // ChronicleVerifyResponse is the response from chronicle.Verify().
 type ChronicleVerifyResponse struct {
+	PerTenant any `json:"per_tenant"`
 	Status string `json:"status"`
 	Total int `json:"total"`
 	Verified int `json:"verified"`

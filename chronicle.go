@@ -20,7 +20,7 @@ func newChronicleNamespace(transport Transport, engine string) *ChronicleNamespa
 	return &ChronicleNamespace{transport: transport, engine: engine}
 }
 
-// Actors executes ACTORS — Active actors in time window
+// Actors executes ACTORS — Top 20 actors by event count in the given time window
 func (ns *ChronicleNamespace) Actors(ctx context.Context, opts *ChronicleActorsOptions) (*ChronicleActorsResponse, error) {
 	args := []string{"ACTORS"}
 	if opts != nil {
@@ -62,6 +62,24 @@ func (ns *ChronicleNamespace) Auth(ctx context.Context, token string) (*Chronicl
 	return &resp, nil
 }
 
+// CommandList executes COMMAND LIST — List available commands
+func (ns *ChronicleNamespace) CommandList(ctx context.Context) (*ChronicleCommandListResponse, error) {
+	args := []string{"COMMAND", "LIST"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ChronicleCommandListResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Count executes COUNT — Count events matching filter predicates
 func (ns *ChronicleNamespace) Count(ctx context.Context, opts *ChronicleCountOptions) (*ChronicleCountResponse, error) {
 	args := []string{"COUNT"}
@@ -85,7 +103,7 @@ func (ns *ChronicleNamespace) Count(ctx context.Context, opts *ChronicleCountOpt
 	return &resp, nil
 }
 
-// Errors executes ERRORS — Error rates by action
+// Errors executes ERRORS — Operations ranked by error rate in the given time window
 func (ns *ChronicleNamespace) Errors(ctx context.Context, opts *ChronicleErrorsOptions) (*ChronicleErrorsResponse, error) {
 	args := []string{"ERRORS"}
 	if opts != nil {
@@ -126,7 +144,7 @@ func (ns *ChronicleNamespace) Health(ctx context.Context) (*ChronicleHealthRespo
 	return &resp, nil
 }
 
-// Hotspots executes HOTSPOTS — Top actors by event volume
+// Hotspots executes HOTSPOTS — Top 20 resources by access count in the given time window
 func (ns *ChronicleNamespace) Hotspots(ctx context.Context, opts *ChronicleHotspotsOptions) (*ChronicleHotspotsResponse, error) {
 	args := []string{"HOTSPOTS"}
 	if opts != nil {
@@ -225,7 +243,7 @@ func (ns *ChronicleNamespace) Query(ctx context.Context, opts *ChronicleQueryOpt
 	return &resp, nil
 }
 
-// Verify executes VERIFY — Verify the cryptographic hash chain integrity of all events. Returns the number of verified events or an error if tampering is detected.
+// Verify executes VERIFY — Verify the cryptographic hash chain integrity of all events. Returns per-tenant and aggregate verified counts or an error if tampering is detected.
 func (ns *ChronicleNamespace) Verify(ctx context.Context) (*ChronicleVerifyResponse, error) {
 	args := []string{"VERIFY"}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)

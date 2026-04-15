@@ -57,7 +57,7 @@ db, err := shroudb.New(shroudb.Options{
 	Forge: "shroudb-forge://token@localhost:6699",
 	Keep: "shroudb-keep://token@localhost:6899",
 	Courier: "shroudb-courier://token@localhost:6999",
-	Chronicle: "chronicle://token@localhost:7099",
+	Chronicle: "chronicle://token@localhost:7199",
 	Stash: "shroudb-stash://token@localhost:6399",
 })
 ```
@@ -300,17 +300,18 @@ Structured audit event engine
 
 | Method | Description |
 |--------|-------------|
-| `Actors(ctx, opts)` | Active actors in time window |
+| `Actors(ctx, opts)` | Top 20 actors by event count in the given time window |
 | `Auth(ctx, token)` | Authenticate this connection |
+| `CommandList(ctx)` | List available commands |
 | `Count(ctx, opts)` | Count events matching filter predicates |
-| `Errors(ctx, opts)` | Error rates by action |
+| `Errors(ctx, opts)` | Operations ranked by error rate in the given time window |
 | `Health(ctx)` | Health check |
-| `Hotspots(ctx, opts)` | Top actors by event volume |
+| `Hotspots(ctx, opts)` | Top 20 resources by access count in the given time window |
 | `Ingest(ctx, event_json)` | Ingest a single structured audit event |
 | `IngestBatch(ctx, events_json)` | Ingest multiple events in a single call |
 | `Ping(ctx)` | Keepalive |
 | `Query(ctx, opts)` | Query events with filter predicates |
-| `Verify(ctx)` | Verify the cryptographic hash chain integrity of all events. Returns the number of verified events or an error if tampering is detected. |
+| `Verify(ctx)` | Verify the cryptographic hash chain integrity of all events. Returns per-tenant and aggregate verified counts or an error if tampering is detected. |
 
 ### `db.Stash`
 

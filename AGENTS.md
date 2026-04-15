@@ -303,17 +303,18 @@ resp, err := db.Courier.ChannelGet(ctx, "name")
 
 | Method | Args | Returns | Description |
 |--------|------|---------|-------------|
-| `Actors` | `ctx, opts` | `*ChronicleActorsResponse, error` | Active actors in time window |
+| `Actors` | `ctx, opts` | `*ChronicleActorsResponse, error` | Top 20 actors by event count in the given time window |
 | `Auth` | `ctx, token` | `*ChronicleAuthResponse, error` | Authenticate this connection |
+| `CommandList` | `ctx` | `*ChronicleCommandListResponse, error` | List available commands |
 | `Count` | `ctx, opts` | `*ChronicleCountResponse, error` | Count events matching filter predicates |
-| `Errors` | `ctx, opts` | `*ChronicleErrorsResponse, error` | Error rates by action |
+| `Errors` | `ctx, opts` | `*ChronicleErrorsResponse, error` | Operations ranked by error rate in the given time window |
 | `Health` | `ctx` | `*ChronicleHealthResponse, error` | Health check |
-| `Hotspots` | `ctx, opts` | `*ChronicleHotspotsResponse, error` | Top actors by event volume |
+| `Hotspots` | `ctx, opts` | `*ChronicleHotspotsResponse, error` | Top 20 resources by access count in the given time window |
 | `Ingest` | `ctx, event_json` | `*ChronicleIngestResponse, error` | Ingest a single structured audit event |
 | `IngestBatch` | `ctx, events_json` | `*ChronicleIngestBatchResponse, error` | Ingest multiple events in a single call |
 | `Ping` | `ctx` | `error` | Keepalive |
 | `Query` | `ctx, opts` | `*ChronicleQueryResponse, error` | Query events with filter predicates |
-| `Verify` | `ctx` | `*ChronicleVerifyResponse, error` | Verify the cryptographic hash chain integrity of all events. Returns the number of verified events or an error if tampering is detected. |
+| `Verify` | `ctx` | `*ChronicleVerifyResponse, error` | Verify the cryptographic hash chain integrity of all events. Returns per-tenant and aggregate verified counts or an error if tampering is detected. |
 
 ### Examples
 
