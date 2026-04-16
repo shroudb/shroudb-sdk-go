@@ -161,6 +161,7 @@ Schema-driven credential envelope engine
 
 | Method | Description |
 |--------|-------------|
+| `Auth(ctx, token)` | Authenticate the current TCP connection with a bearer token. Handled at the connection layer, not dispatched to the engine. HTTP transport uses the Authorization: Bearer header instead. |
 | `CredentialChange(ctx, schema, id, field, old, new)` | Change a credential field (requires old value for verification) |
 | `CredentialImport(ctx, schema, id, field, hash, opts)` | Import a pre-hashed credential (bcrypt, scrypt, argon2). Transparently rehashed to Argon2id on next verify. |
 | `CredentialReset(ctx, schema, id, field, new)` | Force-reset a credential field without requiring old value (admin/reset token) |
@@ -168,7 +169,7 @@ Schema-driven credential envelope engine
 | `EnvelopeDelete(ctx, schema, id)` | Delete an envelope and all associated data |
 | `EnvelopeGet(ctx, schema, id)` | Get an envelope record |
 | `EnvelopeImport(ctx, schema, id, json)` | Import an envelope with pre-hashed credential fields. Non-credential fields processed normally. |
-| `EnvelopeLookup(ctx, schema, field, value)` | Look up an envelope by indexed or searchable field value |
+| `EnvelopeLookup(ctx, schema, field, value)` | Look up an envelope by indexed or searchable field value. Returns the matched entity ID only. |
 | `EnvelopeUpdate(ctx, schema, id, json)` | Update non-credential fields on an existing envelope |
 | `EnvelopeVerify(ctx, schema, id, field, value)` | Verify a credential field on an envelope by explicit field name |
 | `Health(ctx)` | Health check |
@@ -182,6 +183,7 @@ Schema-driven credential envelope engine
 | `SchemaRegister(ctx, name, json)` | Register a credential envelope schema |
 | `SessionCreate(ctx, schema, id, password, opts)` | Verify credentials and issue access + refresh tokens. Fields annotated with claim=true are auto-included in the JWT from the entity's envelope. Enriched claim values override caller-provided META for the same key. |
 | `SessionList(ctx, schema, id)` | List active sessions for an entity |
+| `SessionLogin(ctx, schema, field, value, password, opts)` | Verify credentials by indexed field value (e.g., email) and issue access + refresh tokens. Same claim enrichment as SESSION CREATE. |
 | `SessionRefresh(ctx, schema, token)` | Rotate refresh token and issue new access token. Fields annotated with claim=true are re-read from the entity's current envelope, so refreshed tokens reflect the latest values (e.g. role changes). |
 | `SessionRevoke(ctx, schema, token)` | Revoke a single refresh token (logout one session) |
 | `SessionRevokeAll(ctx, schema, id)` | Revoke all sessions for an entity (logout everywhere) |
@@ -189,12 +191,13 @@ Schema-driven credential envelope engine
 | `UserDelete(ctx, schema, id)` | Sugar: delete an envelope. Equivalent to ENVELOPE DELETE. |
 | `UserGet(ctx, schema, id)` | Sugar: get an envelope. Equivalent to ENVELOPE GET. |
 | `UserImport(ctx, schema, id, json)` | Sugar: import an envelope with pre-hashed credentials. Equivalent to ENVELOPE IMPORT. |
+| `UserLookup(ctx, schema, field, value)` | Sugar: look up by indexed or searchable field value. Equivalent to ENVELOPE LOOKUP. |
 | `UserUpdate(ctx, schema, id, json)` | Sugar: update non-credential fields. Equivalent to ENVELOPE UPDATE. |
 | `UserVerify(ctx, schema, id, password)` | Sugar: verify credential. Infers the credential field from schema. Equivalent to ENVELOPE VERIFY with implicit field. |
 
 ### `db.Veil`
 
-veil
+Searchable encryption with blind indexing
 
 | Method | Description |
 |--------|-------------|
@@ -216,7 +219,7 @@ veil
 
 ### `db.Sentry`
 
-sentry
+Policy-based authorization engine
 
 | Method | Description |
 |--------|-------------|
@@ -241,17 +244,22 @@ Internal certificate authority engine
 
 | Method | Description |
 |--------|-------------|
+| `Auth(ctx, token)` | Authenticate this connection with a token |
 | `CaCreate(ctx, name, algorithm, subject, opts)` | Create a new Certificate Authority |
 | `CaExport(ctx, name)` | Export the active CA certificate (PEM) |
 | `CaInfo(ctx, name)` | Get CA metadata and key version status |
 | `CaList(ctx)` | List all Certificate Authorities |
 | `CaRotate(ctx, name, opts)` | Rotate CA signing key |
+| `Command(ctx)` | List supported commands |
 | `ConfigGet(ctx, key)` | Get a runtime configuration value |
 | `ConfigSet(ctx, key, value)` | Set a runtime configuration value (only scheduler_interval_secs is mutable) |
+| `Health(ctx)` | Health check |
 | `Inspect(ctx, ca, serial)` | Get certificate details |
 | `Issue(ctx, ca, subject, profile, opts)` | Issue a new certificate. Returns cert + private key (private key never stored). |
 | `IssueFromCsr(ctx, ca, csr_pem, profile, opts)` | Issue a certificate from a PEM-encoded CSR |
 | `ListCerts(ctx, ca, opts)` | List certificates for a CA |
+| `Ping(ctx)` | Liveness probe. Returns PONG. |
+| `RegenerateCrl(ctx, ca)` | Force regeneration of the CRL for a CA. Also accepted as `CA REGENERATE_CRL <name>`. |
 | `Renew(ctx, ca, serial, opts)` | Renew a certificate (re-issue with same profile and SANs) |
 | `Revoke(ctx, ca, serial, opts)` | Revoke a certificate |
 
@@ -319,6 +327,7 @@ Encrypted blob storage with S3 backend and envelope encryption
 
 | Method | Description |
 |--------|-------------|
+| `Auth(ctx, token)` | Authenticate this connection with a token |
 | `Command(ctx)` | List supported commands |
 | `Fingerprint(ctx, id, viewer_id, opts)` | Create a viewer-specific encrypted copy of a blob for leak tracing |
 | `Health(ctx)` | Health check |

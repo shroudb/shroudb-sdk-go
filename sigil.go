@@ -20,6 +20,25 @@ func newSigilNamespace(transport Transport, engine string) *SigilNamespace {
 	return &SigilNamespace{transport: transport, engine: engine}
 }
 
+// Auth executes AUTH — Authenticate the current TCP connection with a bearer token. Handled at the connection layer, not dispatched to the engine. HTTP transport uses the Authorization: Bearer header instead.
+func (ns *SigilNamespace) Auth(ctx context.Context, token string) (*SigilAuthResponse, error) {
+	args := []string{"AUTH"}
+	args = append(args, token)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp SigilAuthResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // CredentialChange executes CREDENTIAL CHANGE — Change a credential field (requires old value for verification)
 func (ns *SigilNamespace) CredentialChange(ctx context.Context, schema string, id string, field string, oldValue string, newValue string) (*SigilCredentialChangeResponse, error) {
 	args := []string{"CREDENTIAL", "CHANGE"}
@@ -185,7 +204,7 @@ func (ns *SigilNamespace) EnvelopeImport(ctx context.Context, schema string, id 
 	return &resp, nil
 }
 
-// EnvelopeLookup executes ENVELOPE LOOKUP — Look up an envelope by indexed or searchable field value
+// EnvelopeLookup executes ENVELOPE LOOKUP — Look up an envelope by indexed or searchable field value. Returns the matched entity ID only.
 func (ns *SigilNamespace) EnvelopeLookup(ctx context.Context, schema string, field string, value string) (*SigilEnvelopeLookupResponse, error) {
 	args := []string{"ENVELOPE", "LOOKUP"}
 	args = append(args, schema)
@@ -272,22 +291,11 @@ func (ns *SigilNamespace) Health(ctx context.Context) (*SigilHealthResponse, err
 }
 
 // Jwks executes JWKS — Get the JSON Web Key Set for external token verification
-func (ns *SigilNamespace) Jwks(ctx context.Context, schema string) (*SigilJwksResponse, error) {
+func (ns *SigilNamespace) Jwks(ctx context.Context, schema string) error {
 	args := []string{"JWKS"}
 	args = append(args, schema)
-	raw, err := ns.transport.Execute(ctx, ns.engine, args)
-	if err != nil {
-		return nil, err
-	}
-	var resp SigilJwksResponse
-	jsonBytes, err := json.Marshal(raw)
-	if err != nil {
-		return nil, fmt.Errorf("marshal response: %w", err)
-	}
-	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
-		return nil, fmt.Errorf("unmarshal response: %w", err)
-	}
-	return &resp, nil
+	_, err := ns.transport.Execute(ctx, ns.engine, args)
+	return err
 }
 
 // PasswordChange executes PASSWORD CHANGE — Sugar: change password. Infers credential field from schema. Equivalent to CREDENTIAL CHANGE with implicit field.
@@ -395,40 +403,18 @@ func (ns *SigilNamespace) SchemaAlter(ctx context.Context, name string, action s
 }
 
 // SchemaGet executes SCHEMA GET — Get a schema definition by name
-func (ns *SigilNamespace) SchemaGet(ctx context.Context, name string) (*SigilSchemaGetResponse, error) {
+func (ns *SigilNamespace) SchemaGet(ctx context.Context, name string) error {
 	args := []string{"SCHEMA", "GET"}
 	args = append(args, name)
-	raw, err := ns.transport.Execute(ctx, ns.engine, args)
-	if err != nil {
-		return nil, err
-	}
-	var resp SigilSchemaGetResponse
-	jsonBytes, err := json.Marshal(raw)
-	if err != nil {
-		return nil, fmt.Errorf("marshal response: %w", err)
-	}
-	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
-		return nil, fmt.Errorf("unmarshal response: %w", err)
-	}
-	return &resp, nil
+	_, err := ns.transport.Execute(ctx, ns.engine, args)
+	return err
 }
 
 // SchemaList executes SCHEMA LIST — List all registered schema names
-func (ns *SigilNamespace) SchemaList(ctx context.Context) (*SigilSchemaListResponse, error) {
+func (ns *SigilNamespace) SchemaList(ctx context.Context) error {
 	args := []string{"SCHEMA", "LIST"}
-	raw, err := ns.transport.Execute(ctx, ns.engine, args)
-	if err != nil {
-		return nil, err
-	}
-	var resp SigilSchemaListResponse
-	jsonBytes, err := json.Marshal(raw)
-	if err != nil {
-		return nil, fmt.Errorf("marshal response: %w", err)
-	}
-	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
-		return nil, fmt.Errorf("unmarshal response: %w", err)
-	}
-	return &resp, nil
+	_, err := ns.transport.Execute(ctx, ns.engine, args)
+	return err
 }
 
 // SchemaRegister executes SCHEMA REGISTER — Register a credential envelope schema
@@ -485,15 +471,34 @@ func (ns *SigilNamespace) SessionCreate(ctx context.Context, schema string, id s
 }
 
 // SessionList executes SESSION LIST — List active sessions for an entity
-func (ns *SigilNamespace) SessionList(ctx context.Context, schema string, id string) (*SigilSessionListResponse, error) {
+func (ns *SigilNamespace) SessionList(ctx context.Context, schema string, id string) error {
 	args := []string{"SESSION", "LIST"}
 	args = append(args, schema)
 	args = append(args, id)
+	_, err := ns.transport.Execute(ctx, ns.engine, args)
+	return err
+}
+
+// SessionLogin executes SESSION LOGIN — Verify credentials by indexed field value (e.g., email) and issue access + refresh tokens. Same claim enrichment as SESSION CREATE.
+func (ns *SigilNamespace) SessionLogin(ctx context.Context, schema string, field string, value string, password string, opts *SigilSessionLoginOptions) (*SigilSessionLoginResponse, error) {
+	args := []string{"SESSION", "LOGIN"}
+	args = append(args, schema)
+	args = append(args, field)
+	args = append(args, value)
+	args = append(args, password)
+	if opts != nil {
+		if opts.Meta != nil {
+			jsonBytes, err := json.Marshal(opts.Meta)
+			if err == nil {
+				args = append(args, "META", string(jsonBytes))
+			}
+		}
+	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
 	if err != nil {
 		return nil, err
 	}
-	var resp SigilSessionListResponse
+	var resp SigilSessionLoginResponse
 	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("marshal response: %w", err)
@@ -644,6 +649,27 @@ func (ns *SigilNamespace) UserImport(ctx context.Context, schema string, id stri
 		return nil, err
 	}
 	var resp SigilUserImportResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// UserLookup executes USER LOOKUP — Sugar: look up by indexed or searchable field value. Equivalent to ENVELOPE LOOKUP.
+func (ns *SigilNamespace) UserLookup(ctx context.Context, schema string, field string, value string) (*SigilUserLookupResponse, error) {
+	args := []string{"USER", "LOOKUP"}
+	args = append(args, schema)
+	args = append(args, field)
+	args = append(args, value)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp SigilUserLookupResponse
 	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("marshal response: %w", err)

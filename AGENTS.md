@@ -93,17 +93,18 @@ resp, err := db.Shroudb.Delete(ctx, "namespace", "key")
 ```go
 ctx := context.Background()
 resp, err := db.Cipher.Decrypt(ctx, "my-keyring", "k3Xm:encrypted...")
-// resp.Plaintext
+// resp.Status
 resp, err := db.Cipher.Encrypt(ctx, "my-keyring", "SGVsbG8=")
-// resp.Ciphertext
+// resp.Status
 resp, err := db.Cipher.GenerateDataKey(ctx, "my-keyring")
-// resp.PlaintextKey
+// resp.Status
 ```
 
 ## `db.Sigil` — Schema-driven credential envelope engine
 
 | Method | Args | Returns | Description |
 |--------|------|---------|-------------|
+| `Auth` | `ctx, token` | `*SigilAuthResponse, error` | Authenticate the current TCP connection with a bearer token. Handled at the connection layer, not dispatched to the engine. HTTP transport uses the Authorization: Bearer header instead. |
 | `CredentialChange` | `ctx, schema, id, field, old, new` | `*SigilCredentialChangeResponse, error` | Change a credential field (requires old value for verification) |
 | `CredentialImport` | `ctx, schema, id, field, hash, opts` | `*SigilCredentialImportResponse, error` | Import a pre-hashed credential (bcrypt, scrypt, argon2). Transparently rehashed to Argon2id on next verify. |
 | `CredentialReset` | `ctx, schema, id, field, new` | `*SigilCredentialResetResponse, error` | Force-reset a credential field without requiring old value (admin/reset token) |
@@ -111,20 +112,21 @@ resp, err := db.Cipher.GenerateDataKey(ctx, "my-keyring")
 | `EnvelopeDelete` | `ctx, schema, id` | `*SigilEnvelopeDeleteResponse, error` | Delete an envelope and all associated data |
 | `EnvelopeGet` | `ctx, schema, id` | `*SigilEnvelopeGetResponse, error` | Get an envelope record |
 | `EnvelopeImport` | `ctx, schema, id, json` | `*SigilEnvelopeImportResponse, error` | Import an envelope with pre-hashed credential fields. Non-credential fields processed normally. |
-| `EnvelopeLookup` | `ctx, schema, field, value` | `*SigilEnvelopeLookupResponse, error` | Look up an envelope by indexed or searchable field value |
+| `EnvelopeLookup` | `ctx, schema, field, value` | `*SigilEnvelopeLookupResponse, error` | Look up an envelope by indexed or searchable field value. Returns the matched entity ID only. |
 | `EnvelopeUpdate` | `ctx, schema, id, json` | `*SigilEnvelopeUpdateResponse, error` | Update non-credential fields on an existing envelope |
 | `EnvelopeVerify` | `ctx, schema, id, field, value` | `*SigilEnvelopeVerifyResponse, error` | Verify a credential field on an envelope by explicit field name |
 | `Health` | `ctx` | `*SigilHealthResponse, error` | Health check |
-| `Jwks` | `ctx, schema` | `*SigilJwksResponse, error` | Get the JSON Web Key Set for external token verification |
+| `Jwks` | `ctx, schema` | `error` | Get the JSON Web Key Set for external token verification |
 | `PasswordChange` | `ctx, schema, id, old, new` | `*SigilPasswordChangeResponse, error` | Sugar: change password. Infers credential field from schema. Equivalent to CREDENTIAL CHANGE with implicit field. |
 | `PasswordImport` | `ctx, schema, id, hash, opts` | `*SigilPasswordImportResponse, error` | Sugar: import pre-hashed password. Infers credential field from schema. Equivalent to CREDENTIAL IMPORT with implicit field. |
 | `PasswordReset` | `ctx, schema, id, new` | `*SigilPasswordResetResponse, error` | Sugar: force-reset password. Infers credential field from schema. Equivalent to CREDENTIAL RESET with implicit field. |
 | `SchemaAlter` | `ctx, name, action, opts` | `*SigilSchemaAlterResponse, error` | Add or remove fields from a schema, producing a new version. Added fields are optional (required=false). Existing envelopes remain readable. |
-| `SchemaGet` | `ctx, name` | `*SigilSchemaGetResponse, error` | Get a schema definition by name |
-| `SchemaList` | `ctx` | `*SigilSchemaListResponse, error` | List all registered schema names |
+| `SchemaGet` | `ctx, name` | `error` | Get a schema definition by name |
+| `SchemaList` | `ctx` | `error` | List all registered schema names |
 | `SchemaRegister` | `ctx, name, json` | `*SigilSchemaRegisterResponse, error` | Register a credential envelope schema |
 | `SessionCreate` | `ctx, schema, id, password, opts` | `*SigilSessionCreateResponse, error` | Verify credentials and issue access + refresh tokens. Fields annotated with claim=true are auto-included in the JWT from the entity's envelope. Enriched claim values override caller-provided META for the same key. |
-| `SessionList` | `ctx, schema, id` | `*SigilSessionListResponse, error` | List active sessions for an entity |
+| `SessionList` | `ctx, schema, id` | `error` | List active sessions for an entity |
+| `SessionLogin` | `ctx, schema, field, value, password, opts` | `*SigilSessionLoginResponse, error` | Verify credentials by indexed field value (e.g., email) and issue access + refresh tokens. Same claim enrichment as SESSION CREATE. |
 | `SessionRefresh` | `ctx, schema, token` | `*SigilSessionRefreshResponse, error` | Rotate refresh token and issue new access token. Fields annotated with claim=true are re-read from the entity's current envelope, so refreshed tokens reflect the latest values (e.g. role changes). |
 | `SessionRevoke` | `ctx, schema, token` | `*SigilSessionRevokeResponse, error` | Revoke a single refresh token (logout one session) |
 | `SessionRevokeAll` | `ctx, schema, id` | `*SigilSessionRevokeAllResponse, error` | Revoke all sessions for an entity (logout everywhere) |
@@ -132,6 +134,7 @@ resp, err := db.Cipher.GenerateDataKey(ctx, "my-keyring")
 | `UserDelete` | `ctx, schema, id` | `*SigilUserDeleteResponse, error` | Sugar: delete an envelope. Equivalent to ENVELOPE DELETE. |
 | `UserGet` | `ctx, schema, id` | `*SigilUserGetResponse, error` | Sugar: get an envelope. Equivalent to ENVELOPE GET. |
 | `UserImport` | `ctx, schema, id, json` | `*SigilUserImportResponse, error` | Sugar: import an envelope with pre-hashed credentials. Equivalent to ENVELOPE IMPORT. |
+| `UserLookup` | `ctx, schema, field, value` | `*SigilUserLookupResponse, error` | Sugar: look up by indexed or searchable field value. Equivalent to ENVELOPE LOOKUP. |
 | `UserUpdate` | `ctx, schema, id, json` | `*SigilUserUpdateResponse, error` | Sugar: update non-credential fields. Equivalent to ENVELOPE UPDATE. |
 | `UserVerify` | `ctx, schema, id, password` | `*SigilUserVerifyResponse, error` | Sugar: verify credential. Infers the credential field from schema. Equivalent to ENVELOPE VERIFY with implicit field. |
 
@@ -147,7 +150,7 @@ resp, err := db.Sigil.CredentialReset(ctx, "myapp", "alice", "email", "new")
 // resp.Status
 ```
 
-## `db.Veil` — veil
+## `db.Veil` — Searchable encryption with blind indexing
 
 | Method | Args | Returns | Description |
 |--------|------|---------|-------------|
@@ -179,7 +182,7 @@ resp, err := db.Veil.IndexDestroy(ctx, "my-keyring")
 // resp.Status
 ```
 
-## `db.Sentry` — sentry
+## `db.Sentry` — Policy-based authorization engine
 
 | Method | Args | Returns | Description |
 |--------|------|---------|-------------|
@@ -214,17 +217,22 @@ resp, err := db.Sentry.PolicyDelete(ctx, "name")
 
 | Method | Args | Returns | Description |
 |--------|------|---------|-------------|
+| `Auth` | `ctx, token` | `*ForgeAuthResponse, error` | Authenticate this connection with a token |
 | `CaCreate` | `ctx, name, algorithm, subject, opts` | `*ForgeCaCreateResponse, error` | Create a new Certificate Authority |
 | `CaExport` | `ctx, name` | `*ForgeCaExportResponse, error` | Export the active CA certificate (PEM) |
 | `CaInfo` | `ctx, name` | `*ForgeCaInfoResponse, error` | Get CA metadata and key version status |
 | `CaList` | `ctx` | `*ForgeCaListResponse, error` | List all Certificate Authorities |
 | `CaRotate` | `ctx, name, opts` | `*ForgeCaRotateResponse, error` | Rotate CA signing key |
+| `Command` | `ctx` | `*ForgeCommandResponse, error` | List supported commands |
 | `ConfigGet` | `ctx, key` | `*ForgeConfigGetResponse, error` | Get a runtime configuration value |
 | `ConfigSet` | `ctx, key, value` | `*ForgeConfigSetResponse, error` | Set a runtime configuration value (only scheduler_interval_secs is mutable) |
+| `Health` | `ctx` | `*ForgeHealthResponse, error` | Health check |
 | `Inspect` | `ctx, ca, serial` | `*ForgeInspectResponse, error` | Get certificate details |
 | `Issue` | `ctx, ca, subject, profile, opts` | `*ForgeIssueResponse, error` | Issue a new certificate. Returns cert + private key (private key never stored). |
 | `IssueFromCsr` | `ctx, ca, csr_pem, profile, opts` | `*ForgeIssueFromCsrResponse, error` | Issue a certificate from a PEM-encoded CSR |
 | `ListCerts` | `ctx, ca, opts` | `*ForgeListCertsResponse, error` | List certificates for a CA |
+| `Ping` | `ctx` | `*ForgePingResponse, error` | Liveness probe. Returns PONG. |
+| `RegenerateCrl` | `ctx, ca` | `*ForgeRegenerateCrlResponse, error` | Force regeneration of the CRL for a CA. Also accepted as `CA REGENERATE_CRL <name>`. |
 | `Renew` | `ctx, ca, serial, opts` | `*ForgeRenewResponse, error` | Renew a certificate (re-issue with same profile and SANs) |
 | `Revoke` | `ctx, ca, serial, opts` | `*ForgeRevokeResponse, error` | Revoke a certificate |
 
@@ -330,6 +338,7 @@ resp, err := db.Chronicle.IngestBatch(ctx, map[string]any{})
 
 | Method | Args | Returns | Description |
 |--------|------|---------|-------------|
+| `Auth` | `ctx, token` | `error` | Authenticate this connection with a token |
 | `Command` | `ctx` | `error` | List supported commands |
 | `Fingerprint` | `ctx, id, viewer_id, opts` | `*StashFingerprintResponse, error` | Create a viewer-specific encrypted copy of a blob for leak tracing |
 | `Health` | `ctx` | `error` | Health check |
@@ -419,6 +428,7 @@ if err != nil {
 | `OBJECT_STORE` | `ErrOBJECT_STORE` | S3 object store operation failed |
 | `REVOKED` | `ErrREVOKED` | Blob has been soft-revoked |
 | `SHREDDED` | `ErrSHREDDED` | Blob has been crypto-shredded (unrecoverable) |
+| `STORE` | `ErrSTORE` | ShrouDB Store (metadata) operation failed |
 
 ## Common Mistakes
 

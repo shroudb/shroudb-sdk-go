@@ -20,6 +20,14 @@ func newStashNamespace(transport Transport, engine string) *StashNamespace {
 	return &StashNamespace{transport: transport, engine: engine}
 }
 
+// Auth executes AUTH — Authenticate this connection with a token
+func (ns *StashNamespace) Auth(ctx context.Context, token string) error {
+	args := []string{"AUTH"}
+	args = append(args, token)
+	_, err := ns.transport.Execute(ctx, ns.engine, args)
+	return err
+}
+
 // Command executes COMMAND — List supported commands
 func (ns *StashNamespace) Command(ctx context.Context) error {
 	args := []string{"COMMAND"}

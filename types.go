@@ -162,12 +162,16 @@ type CipherCommandListResponse struct {
 
 // CipherDecryptResponse is the response from cipher.Decrypt().
 type CipherDecryptResponse struct {
+	// Status — ok
+	Status string `json:"status"`
 	// Plaintext — Decrypted data
 	Plaintext string `json:"plaintext"`
 }
 
 // CipherEncryptResponse is the response from cipher.Encrypt().
 type CipherEncryptResponse struct {
+	// Status — ok
+	Status string `json:"status"`
 	// Ciphertext — Encrypted data with embedded key version
 	Ciphertext string `json:"ciphertext"`
 	// KeyVersion — Key version used for encryption
@@ -176,6 +180,8 @@ type CipherEncryptResponse struct {
 
 // CipherGenerateDataKeyResponse is the response from cipher.GenerateDataKey().
 type CipherGenerateDataKeyResponse struct {
+	// Status — ok
+	Status string `json:"status"`
 	// PlaintextKey — Plaintext DEK (use for local encryption, then discard)
 	PlaintextKey string `json:"plaintext_key"`
 	// WrappedKey — Wrapped DEK (store alongside ciphertext, unwrap via DECRYPT)
@@ -204,6 +210,8 @@ type CipherKeyInfoResponse struct {
 
 // CipherKeyringCreateResponse is the response from cipher.KeyringCreate().
 type CipherKeyringCreateResponse struct {
+	// Status — ok
+	Status string `json:"status"`
 	// Keyring — Keyring name
 	Keyring string `json:"keyring"`
 	// Algorithm — Algorithm
@@ -214,18 +222,20 @@ type CipherKeyringCreateResponse struct {
 
 // CipherKeyringListResponse is the response from cipher.KeyringList().
 type CipherKeyringListResponse struct {
-	// Keyrings — List of keyring names
+	// Keyrings — Bare JSON array of keyring name strings
 	Keyrings []any `json:"keyrings"`
 }
 
 // CipherPingResponse is the response from cipher.Ping().
 type CipherPingResponse struct {
-	// Message — Always PONG
-	Message string `json:"message"`
+	// Pong — Always the bare string "PONG" (not wrapped in an object)
+	Pong string `json:"pong"`
 }
 
 // CipherRewrapResponse is the response from cipher.Rewrap().
 type CipherRewrapResponse struct {
+	// Status — ok
+	Status string `json:"status"`
 	// Ciphertext — Re-encrypted ciphertext with new key version
 	Ciphertext string `json:"ciphertext"`
 	// KeyVersion — New key version used
@@ -234,6 +244,8 @@ type CipherRewrapResponse struct {
 
 // CipherRotateResponse is the response from cipher.Rotate().
 type CipherRotateResponse struct {
+	// Status — ok
+	Status string `json:"status"`
 	// Rotated — Whether rotation occurred
 	Rotated bool `json:"rotated"`
 	// KeyVersion — Active key version after operation
@@ -244,6 +256,8 @@ type CipherRotateResponse struct {
 
 // CipherSignResponse is the response from cipher.Sign().
 type CipherSignResponse struct {
+	// Status — ok
+	Status string `json:"status"`
 	// Signature — Hex-encoded detached signature
 	Signature string `json:"signature"`
 	// KeyVersion — Key version used
@@ -252,6 +266,8 @@ type CipherSignResponse struct {
 
 // CipherVerifySignatureResponse is the response from cipher.VerifySignature().
 type CipherVerifySignatureResponse struct {
+	// Status — ok
+	Status string `json:"status"`
 	// Valid — Whether the signature is valid
 	Valid bool `json:"valid"`
 }
@@ -302,6 +318,11 @@ type CipherRotateOptions struct {
 	Dryrun bool `json:"dryrun,omitempty"`
 }
 
+// SigilAuthResponse is the response from sigil.Auth().
+type SigilAuthResponse struct {
+	Status string `json:"status"`
+}
+
 // SigilCredentialChangeResponse is the response from sigil.CredentialChange().
 type SigilCredentialChangeResponse struct {
 	Status string `json:"status"`
@@ -310,6 +331,7 @@ type SigilCredentialChangeResponse struct {
 // SigilCredentialImportResponse is the response from sigil.CredentialImport().
 type SigilCredentialImportResponse struct {
 	Algorithm string `json:"algorithm"`
+	Status string `json:"status"`
 }
 
 // SigilCredentialResetResponse is the response from sigil.CredentialReset().
@@ -320,8 +342,9 @@ type SigilCredentialResetResponse struct {
 // SigilEnvelopeCreateResponse is the response from sigil.EnvelopeCreate().
 type SigilEnvelopeCreateResponse struct {
 	CreatedAt int `json:"created_at"`
+	EntityId string `json:"entity_id"`
 	Fields any `json:"fields"`
-	Id string `json:"id"`
+	Status string `json:"status"`
 }
 
 // SigilEnvelopeDeleteResponse is the response from sigil.EnvelopeDelete().
@@ -332,46 +355,42 @@ type SigilEnvelopeDeleteResponse struct {
 // SigilEnvelopeGetResponse is the response from sigil.EnvelopeGet().
 type SigilEnvelopeGetResponse struct {
 	CreatedAt int `json:"created_at"`
+	EntityId string `json:"entity_id"`
 	Fields any `json:"fields"`
-	Id string `json:"id"`
 	UpdatedAt int `json:"updated_at"`
 }
 
 // SigilEnvelopeImportResponse is the response from sigil.EnvelopeImport().
 type SigilEnvelopeImportResponse struct {
 	CreatedAt int `json:"created_at"`
+	EntityId string `json:"entity_id"`
 	Fields any `json:"fields"`
-	Id string `json:"id"`
+	Status string `json:"status"`
 }
 
 // SigilEnvelopeLookupResponse is the response from sigil.EnvelopeLookup().
 type SigilEnvelopeLookupResponse struct {
-	CreatedAt int `json:"created_at"`
-	Fields any `json:"fields"`
-	Id string `json:"id"`
-	UpdatedAt int `json:"updated_at"`
+	EntityId string `json:"entity_id"`
+	Status string `json:"status"`
 }
 
 // SigilEnvelopeUpdateResponse is the response from sigil.EnvelopeUpdate().
 type SigilEnvelopeUpdateResponse struct {
+	EntityId string `json:"entity_id"`
 	Fields any `json:"fields"`
-	Id string `json:"id"`
+	Status string `json:"status"`
 	UpdatedAt int `json:"updated_at"`
 }
 
 // SigilEnvelopeVerifyResponse is the response from sigil.EnvelopeVerify().
 type SigilEnvelopeVerifyResponse struct {
+	Status string `json:"status"`
 	Valid bool `json:"valid"`
 }
 
 // SigilHealthResponse is the response from sigil.Health().
 type SigilHealthResponse struct {
 	Status string `json:"status"`
-}
-
-// SigilJwksResponse is the response from sigil.Jwks().
-type SigilJwksResponse struct {
-	Keys []any `json:"keys"`
 }
 
 // SigilPasswordChangeResponse is the response from sigil.PasswordChange().
@@ -382,6 +401,7 @@ type SigilPasswordChangeResponse struct {
 // SigilPasswordImportResponse is the response from sigil.PasswordImport().
 type SigilPasswordImportResponse struct {
 	Algorithm string `json:"algorithm"`
+	Status string `json:"status"`
 }
 
 // SigilPasswordResetResponse is the response from sigil.PasswordReset().
@@ -393,21 +413,13 @@ type SigilPasswordResetResponse struct {
 type SigilSchemaAlterResponse struct {
 	Fields int `json:"fields"`
 	Name string `json:"name"`
+	Status string `json:"status"`
 	Version int `json:"version"`
-}
-
-// SigilSchemaGetResponse is the response from sigil.SchemaGet().
-type SigilSchemaGetResponse struct {
-	Schema any `json:"schema"`
-}
-
-// SigilSchemaListResponse is the response from sigil.SchemaList().
-type SigilSchemaListResponse struct {
-	Names []any `json:"names"`
 }
 
 // SigilSchemaRegisterResponse is the response from sigil.SchemaRegister().
 type SigilSchemaRegisterResponse struct {
+	Status string `json:"status"`
 	Version int `json:"version"`
 }
 
@@ -416,11 +428,15 @@ type SigilSessionCreateResponse struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn int `json:"expires_in"`
 	RefreshToken string `json:"refresh_token"`
+	Status string `json:"status"`
 }
 
-// SigilSessionListResponse is the response from sigil.SessionList().
-type SigilSessionListResponse struct {
-	Sessions []any `json:"sessions"`
+// SigilSessionLoginResponse is the response from sigil.SessionLogin().
+type SigilSessionLoginResponse struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn int `json:"expires_in"`
+	RefreshToken string `json:"refresh_token"`
+	Status string `json:"status"`
 }
 
 // SigilSessionRefreshResponse is the response from sigil.SessionRefresh().
@@ -428,6 +444,7 @@ type SigilSessionRefreshResponse struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn int `json:"expires_in"`
 	RefreshToken string `json:"refresh_token"`
+	Status string `json:"status"`
 }
 
 // SigilSessionRevokeResponse is the response from sigil.SessionRevoke().
@@ -438,13 +455,15 @@ type SigilSessionRevokeResponse struct {
 // SigilSessionRevokeAllResponse is the response from sigil.SessionRevokeAll().
 type SigilSessionRevokeAllResponse struct {
 	Revoked int `json:"revoked"`
+	Status string `json:"status"`
 }
 
 // SigilUserCreateResponse is the response from sigil.UserCreate().
 type SigilUserCreateResponse struct {
 	CreatedAt int `json:"created_at"`
+	EntityId string `json:"entity_id"`
 	Fields any `json:"fields"`
-	UserId string `json:"user_id"`
+	Status string `json:"status"`
 }
 
 // SigilUserDeleteResponse is the response from sigil.UserDelete().
@@ -455,27 +474,36 @@ type SigilUserDeleteResponse struct {
 // SigilUserGetResponse is the response from sigil.UserGet().
 type SigilUserGetResponse struct {
 	CreatedAt int `json:"created_at"`
+	EntityId string `json:"entity_id"`
 	Fields any `json:"fields"`
 	UpdatedAt int `json:"updated_at"`
-	UserId string `json:"user_id"`
 }
 
 // SigilUserImportResponse is the response from sigil.UserImport().
 type SigilUserImportResponse struct {
 	CreatedAt int `json:"created_at"`
+	EntityId string `json:"entity_id"`
 	Fields any `json:"fields"`
-	UserId string `json:"user_id"`
+	Status string `json:"status"`
+}
+
+// SigilUserLookupResponse is the response from sigil.UserLookup().
+type SigilUserLookupResponse struct {
+	EntityId string `json:"entity_id"`
+	Status string `json:"status"`
 }
 
 // SigilUserUpdateResponse is the response from sigil.UserUpdate().
 type SigilUserUpdateResponse struct {
+	EntityId string `json:"entity_id"`
 	Fields any `json:"fields"`
+	Status string `json:"status"`
 	UpdatedAt int `json:"updated_at"`
-	UserId string `json:"user_id"`
 }
 
 // SigilUserVerifyResponse is the response from sigil.UserVerify().
 type SigilUserVerifyResponse struct {
+	Status string `json:"status"`
 	Valid bool `json:"valid"`
 }
 
@@ -499,6 +527,12 @@ type SigilSchemaAlterOptions struct {
 
 // SigilSessionCreateOptions contains optional parameters for sigil.SessionCreate().
 type SigilSessionCreateOptions struct {
+	// Meta — Extra claims to merge into access token
+	Meta any `json:"meta,omitempty"`
+}
+
+// SigilSessionLoginOptions contains optional parameters for sigil.SessionLogin().
+type SigilSessionLoginOptions struct {
 	// Meta — Extra claims to merge into access token
 	Meta any `json:"meta,omitempty"`
 }
@@ -747,6 +781,11 @@ type SentryKeyRotateOptions struct {
 	Dryrun bool `json:"DRYRUN,omitempty"`
 }
 
+// ForgeAuthResponse is the response from forge.Auth().
+type ForgeAuthResponse struct {
+	Status string `json:"status"`
+}
+
 // ForgeCaCreateResponse is the response from forge.CaCreate().
 type ForgeCaCreateResponse struct {
 	ActiveVersion int `json:"active_version"`
@@ -780,6 +819,11 @@ type ForgeCaRotateResponse struct {
 	Rotated bool `json:"rotated"`
 }
 
+// ForgeCommandResponse is the response from forge.Command().
+type ForgeCommandResponse struct {
+	Commands []any `json:"commands"`
+}
+
 // ForgeConfigGetResponse is the response from forge.ConfigGet().
 type ForgeConfigGetResponse struct {
 	Key string `json:"key"`
@@ -792,6 +836,11 @@ type ForgeConfigSetResponse struct {
 	Key string `json:"key"`
 	Status string `json:"status"`
 	Value string `json:"value"`
+}
+
+// ForgeHealthResponse is the response from forge.Health().
+type ForgeHealthResponse struct {
+	Status string `json:"status"`
 }
 
 // ForgeInspectResponse is the response from forge.Inspect().
@@ -819,6 +868,16 @@ type ForgeIssueFromCsrResponse struct {
 type ForgeListCertsResponse struct {
 	Certs []any `json:"certs"`
 	Count int `json:"count"`
+}
+
+// ForgePingResponse is the response from forge.Ping().
+type ForgePingResponse struct {
+	Status string `json:"status"`
+}
+
+// ForgeRegenerateCrlResponse is the response from forge.RegenerateCrl().
+type ForgeRegenerateCrlResponse struct {
+	Status string `json:"status"`
 }
 
 // ForgeRenewResponse is the response from forge.Renew().

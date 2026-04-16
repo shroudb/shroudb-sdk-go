@@ -10,7 +10,7 @@ import (
 
 // VeilNamespace provides methods for the veil engine.
 //
-// veil
+// Searchable encryption with blind indexing
 type VeilNamespace struct {
 	transport Transport
 	engine    string

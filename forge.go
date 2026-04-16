@@ -20,6 +20,25 @@ func newForgeNamespace(transport Transport, engine string) *ForgeNamespace {
 	return &ForgeNamespace{transport: transport, engine: engine}
 }
 
+// Auth executes AUTH — Authenticate this connection with a token
+func (ns *ForgeNamespace) Auth(ctx context.Context, token string) (*ForgeAuthResponse, error) {
+	args := []string{"AUTH"}
+	args = append(args, token)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ForgeAuthResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // CaCreate executes CA CREATE — Create a new Certificate Authority
 func (ns *ForgeNamespace) CaCreate(ctx context.Context, name string, algorithm string, subject string, opts *ForgeCaCreateOptions) (*ForgeCaCreateResponse, error) {
 	args := []string{"CA", "CREATE"}
@@ -133,6 +152,24 @@ func (ns *ForgeNamespace) CaRotate(ctx context.Context, name string, opts *Forge
 	return &resp, nil
 }
 
+// Command executes COMMAND — List supported commands
+func (ns *ForgeNamespace) Command(ctx context.Context) (*ForgeCommandResponse, error) {
+	args := []string{"COMMAND"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ForgeCommandResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // ConfigGet executes CONFIG GET — Get a runtime configuration value
 func (ns *ForgeNamespace) ConfigGet(ctx context.Context, key string) (*ForgeConfigGetResponse, error) {
 	args := []string{"CONFIG", "GET"}
@@ -162,6 +199,24 @@ func (ns *ForgeNamespace) ConfigSet(ctx context.Context, key string, value strin
 		return nil, err
 	}
 	var resp ForgeConfigSetResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// Health executes HEALTH — Health check
+func (ns *ForgeNamespace) Health(ctx context.Context) (*ForgeHealthResponse, error) {
+	args := []string{"HEALTH"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ForgeHealthResponse
 	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("marshal response: %w", err)
@@ -270,6 +325,43 @@ func (ns *ForgeNamespace) ListCerts(ctx context.Context, ca string, opts *ForgeL
 		return nil, err
 	}
 	var resp ForgeListCertsResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// Ping executes PING — Liveness probe. Returns PONG.
+func (ns *ForgeNamespace) Ping(ctx context.Context) (*ForgePingResponse, error) {
+	args := []string{"PING"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ForgePingResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// RegenerateCrl executes REGENERATE_CRL — Force regeneration of the CRL for a CA. Also accepted as `CA REGENERATE_CRL <name>`.
+func (ns *ForgeNamespace) RegenerateCrl(ctx context.Context, ca string) (*ForgeRegenerateCrlResponse, error) {
+	args := []string{"REGENERATE_CRL"}
+	args = append(args, fmt.Sprint(ca))
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ForgeRegenerateCrlResponse
 	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("marshal response: %w", err)

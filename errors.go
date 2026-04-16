@@ -113,6 +113,8 @@ const (
 	ErrSIGNING = "SIGNING"
 	// ErrSTORAGE — Backend storage error
 	ErrSTORAGE = "STORAGE"
+	// ErrSTORE — ShrouDB Store (metadata) operation failed
+	ErrSTORE = "STORE"
 	// ErrTOKEN_REUSE — Refresh token reuse detected — entire family revoked
 	ErrTOKEN_REUSE = "TOKEN_REUSE"
 	// ErrVALIDATION_FAILED — Metadata validation failed against namespace schema

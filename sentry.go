@@ -10,7 +10,7 @@ import (
 
 // SentryNamespace provides methods for the sentry engine.
 //
-// sentry
+// Policy-based authorization engine
 type SentryNamespace struct {
 	transport Transport
 	engine    string
