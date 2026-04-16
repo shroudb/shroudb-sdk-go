@@ -409,6 +409,11 @@ type SigilPasswordResetResponse struct {
 	Status string `json:"status"`
 }
 
+// SigilPingResponse is the response from sigil.Ping().
+type SigilPingResponse struct {
+	Status string `json:"status"`
+}
+
 // SigilSchemaAlterResponse is the response from sigil.SchemaAlter().
 type SigilSchemaAlterResponse struct {
 	Fields int `json:"fields"`

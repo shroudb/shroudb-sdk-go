@@ -177,6 +177,7 @@ Schema-driven credential envelope engine
 | `PasswordChange(ctx, schema, id, old, new)` | Sugar: change password. Infers credential field from schema. Equivalent to CREDENTIAL CHANGE with implicit field. |
 | `PasswordImport(ctx, schema, id, hash, opts)` | Sugar: import pre-hashed password. Infers credential field from schema. Equivalent to CREDENTIAL IMPORT with implicit field. |
 | `PasswordReset(ctx, schema, id, new)` | Sugar: force-reset password. Infers credential field from schema. Equivalent to CREDENTIAL RESET with implicit field. |
+| `Ping(ctx)` | Ping-pong connectivity test |
 | `SchemaAlter(ctx, name, action, opts)` | Add or remove fields from a schema, producing a new version. Added fields are optional (required=false). Existing envelopes remain readable. |
 | `SchemaGet(ctx, name)` | Get a schema definition by name |
 | `SchemaList(ctx)` | List all registered schema names |

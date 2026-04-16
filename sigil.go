@@ -370,6 +370,24 @@ func (ns *SigilNamespace) PasswordReset(ctx context.Context, schema string, id s
 	return &resp, nil
 }
 
+// Ping executes PING — Ping-pong connectivity test
+func (ns *SigilNamespace) Ping(ctx context.Context) (*SigilPingResponse, error) {
+	args := []string{"PING"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp SigilPingResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // SchemaAlter executes SCHEMA ALTER — Add or remove fields from a schema, producing a new version. Added fields are optional (required=false). Existing envelopes remain readable.
 func (ns *SigilNamespace) SchemaAlter(ctx context.Context, name string, action string, opts *SigilSchemaAlterOptions) (*SigilSchemaAlterResponse, error) {
 	args := []string{"SCHEMA", "ALTER"}
