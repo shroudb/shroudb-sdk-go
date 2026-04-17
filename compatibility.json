@@ -1,0 +1,16 @@
+{
+  "sdk_version": "2.2.0",
+  "wire_protocol": "RESP3/1",
+  "engines": {
+    "shroudb": { "min_version": "1.0.0" },
+    "cipher": { "min_version": "1.0.0" },
+    "sigil": { "min_version": "2.0.0" },
+    "veil": { "min_version": "1.1.0" },
+    "sentry": { "min_version": "1.0.0" },
+    "forge": { "min_version": "1.0.0" },
+    "keep": { "min_version": "1.0.0" },
+    "courier": { "min_version": "1.0.0" },
+    "chronicle": { "min_version": "1.0.0" },
+    "stash": { "min_version": "0.1.0" }
+  }
+}

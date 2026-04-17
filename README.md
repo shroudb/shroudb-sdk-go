@@ -146,6 +146,7 @@ Encryption-as-a-service
 | `Encrypt(ctx, keyring, plaintext, opts)` | Encrypt plaintext with the active key version |
 | `GenerateDataKey(ctx, keyring, opts)` | Generate a data encryption key (envelope encryption pattern) |
 | `Health(ctx)` | Check server health |
+| `Hello(ctx)` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `KeyInfo(ctx, keyring)` | Get keyring metadata and key version information |
 | `KeyringCreate(ctx, name, algorithm, opts)` | Create a new keyring with its first active key |
 | `KeyringList(ctx)` | List all keyring names |
@@ -173,6 +174,7 @@ Schema-driven credential envelope engine
 | `EnvelopeUpdate(ctx, schema, id, json)` | Update non-credential fields on an existing envelope |
 | `EnvelopeVerify(ctx, schema, id, field, value)` | Verify a credential field on an envelope by explicit field name |
 | `Health(ctx)` | Health check |
+| `Hello(ctx)` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Jwks(ctx, schema)` | Get the JSON Web Key Set for external token verification |
 | `PasswordChange(ctx, schema, id, old, new)` | Sugar: change password. Infers credential field from schema. Equivalent to CREDENTIAL CHANGE with implicit field. |
 | `PasswordImport(ctx, schema, id, hash, opts)` | Sugar: import pre-hashed password. Infers credential field from schema. Equivalent to CREDENTIAL IMPORT with implicit field. |
@@ -206,6 +208,7 @@ Searchable encryption with blind indexing
 | `CommandList(ctx)` | List all supported commands |
 | `Delete(ctx, index, id)` | Remove an entry's blind tokens from the index |
 | `Health(ctx)` | Health check |
+| `Hello(ctx)` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `IndexCreate(ctx, name)` | Create a new blind index with a fresh HMAC key |
 | `IndexDestroy(ctx, name)` | Crypto-shred an index: zeroize the HMAC key, delete all entries, and remove the index. After destruction, the index name can be reused. |
 | `IndexInfo(ctx, name)` | Get information about a blind index |
@@ -228,6 +231,7 @@ Policy-based authorization engine
 | `CommandList(ctx)` | List all supported commands |
 | `Evaluate(ctx, json)` | Evaluate an authorization request against policies and return a signed decision |
 | `Health(ctx)` | Server health check |
+| `Hello(ctx)` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Jwks(ctx)` | Get the JSON Web Key Set for verifying decision tokens |
 | `KeyInfo(ctx)` | Get signing key metadata |
 | `KeyRotate(ctx, opts)` | Rotate the signing key |
@@ -255,6 +259,7 @@ Internal certificate authority engine
 | `ConfigGet(ctx, key)` | Get a runtime configuration value |
 | `ConfigSet(ctx, key, value)` | Set a runtime configuration value (only scheduler_interval_secs is mutable) |
 | `Health(ctx)` | Health check |
+| `Hello(ctx)` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Inspect(ctx, ca, serial)` | Get certificate details |
 | `Issue(ctx, ca, subject, profile, opts)` | Issue a new certificate. Returns cert + private key (private key never stored). |
 | `IssueFromCsr(ctx, ca, csr_pem, profile, opts)` | Issue a certificate from a PEM-encoded CSR |
@@ -275,6 +280,7 @@ Secrets manager with path-based access control and versioning
 | `Delete(ctx, path)` | Soft-delete a secret. Version history is preserved. |
 | `Get(ctx, path, opts)` | Retrieve a secret value. Returns the latest version by default. |
 | `Health(ctx)` | Health check. |
+| `Hello(ctx)` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `List(ctx, prefix)` | List secret paths, optionally filtered by prefix. Excludes deleted secrets. |
 | `Ping(ctx)` | Ping-pong. |
 | `Purge(ctx, path)` | Permanently remove a secret and all its versions. Irreversible — used for GDPR right-to-erasure compliance. After purge, GET returns not-found (not deleted). |
@@ -299,6 +305,7 @@ Just-in-time decryption delivery engine
 | `DeliveryGet(ctx, id)` | Get a delivery receipt by ID |
 | `DeliveryList(ctx, opts)` | List delivery receipts, optionally filtered by channel |
 | `Health(ctx)` | Server health check |
+| `Hello(ctx)` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Metrics(ctx)` | Get delivery metrics (total, success, failure counts, per-channel breakdown) |
 | `NotifyEvent(ctx, channel, subject, body)` | Trigger a notification on a pre-configured channel (e.g. rotation/expiry alerts) |
 | `Ping(ctx)` | Connectivity check |
@@ -315,6 +322,7 @@ Structured audit event engine
 | `Count(ctx, opts)` | Count events matching filter predicates |
 | `Errors(ctx, opts)` | Operations ranked by error rate in the given time window |
 | `Health(ctx)` | Health check |
+| `Hello(ctx)` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Hotspots(ctx, opts)` | Top 20 resources by access count in the given time window |
 | `Ingest(ctx, event_json)` | Ingest a single structured audit event |
 | `IngestBatch(ctx, events_json)` | Ingest multiple events in a single call |
@@ -332,6 +340,7 @@ Encrypted blob storage with S3 backend and envelope encryption
 | `Command(ctx)` | List supported commands |
 | `Fingerprint(ctx, id, viewer_id, opts)` | Create a viewer-specific encrypted copy of a blob for leak tracing |
 | `Health(ctx)` | Health check |
+| `Hello(ctx)` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Inspect(ctx, id)` | Read blob metadata without downloading or decrypting |
 | `List(ctx, opts)` | List blobs for the current tenant |
 | `Ping(ctx)` | Ping-pong |

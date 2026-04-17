@@ -216,6 +216,24 @@ func (ns *CourierNamespace) Health(ctx context.Context) (*CourierHealthResponse,
 	return &resp, nil
 }
 
+// Hello executes HELLO — Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version.
+func (ns *CourierNamespace) Hello(ctx context.Context) (*CourierHelloResponse, error) {
+	args := []string{"HELLO"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp CourierHelloResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Metrics executes METRICS — Get delivery metrics (total, success, failure counts, per-channel breakdown)
 func (ns *CourierNamespace) Metrics(ctx context.Context) (*CourierMetricsResponse, error) {
 	args := []string{"METRICS"}

@@ -196,6 +196,20 @@ type CipherHealthResponse struct {
 	Status string `json:"status"`
 }
 
+// CipherHelloResponse is the response from cipher.Hello().
+type CipherHelloResponse struct {
+	// Engine — Canonical engine name (e.g., "cipher")
+	Engine string `json:"engine"`
+	// Version — Engine's semantic version
+	Version string `json:"version"`
+	// Protocol — Wire protocol identifier (e.g., "RESP3/1")
+	Protocol string `json:"protocol"`
+	// Commands — Supported command surface (uppercase, subcommands space-separated)
+	Commands []any `json:"commands"`
+	// Capabilities — Cross-cutting capability tags; may be empty
+	Capabilities []any `json:"capabilities"`
+}
+
 // CipherKeyInfoResponse is the response from cipher.KeyInfo().
 type CipherKeyInfoResponse struct {
 	// Keyring — Keyring name
@@ -393,6 +407,15 @@ type SigilHealthResponse struct {
 	Status string `json:"status"`
 }
 
+// SigilHelloResponse is the response from sigil.Hello().
+type SigilHelloResponse struct {
+	Capabilities []any `json:"capabilities"`
+	Commands []any `json:"commands"`
+	Engine string `json:"engine"`
+	Protocol string `json:"protocol"`
+	Version string `json:"version"`
+}
+
 // SigilPasswordChangeResponse is the response from sigil.PasswordChange().
 type SigilPasswordChangeResponse struct {
 	Status string `json:"status"`
@@ -564,6 +587,15 @@ type VeilHealthResponse struct {
 	Status any `json:"status"`
 }
 
+// VeilHelloResponse is the response from veil.Hello().
+type VeilHelloResponse struct {
+	Engine any `json:"engine"`
+	Version any `json:"version"`
+	Protocol any `json:"protocol"`
+	Commands any `json:"commands"`
+	Capabilities any `json:"capabilities"`
+}
+
 // VeilIndexCreateResponse is the response from veil.IndexCreate().
 type VeilIndexCreateResponse struct {
 	Status any `json:"status"`
@@ -695,6 +727,15 @@ type SentryEvaluateResponse struct {
 type SentryHealthResponse struct {
 	PolicyCount int `json:"policy_count"`
 	Status string `json:"status"`
+}
+
+// SentryHelloResponse is the response from sentry.Hello().
+type SentryHelloResponse struct {
+	Capabilities []any `json:"capabilities"`
+	Commands []any `json:"commands"`
+	Engine string `json:"engine"`
+	Protocol string `json:"protocol"`
+	Version string `json:"version"`
 }
 
 // SentryJwksResponse is the response from sentry.Jwks().
@@ -848,6 +889,15 @@ type ForgeHealthResponse struct {
 	Status string `json:"status"`
 }
 
+// ForgeHelloResponse is the response from forge.Hello().
+type ForgeHelloResponse struct {
+	Capabilities []any `json:"capabilities"`
+	Commands []any `json:"commands"`
+	Engine string `json:"engine"`
+	Protocol string `json:"protocol"`
+	Version string `json:"version"`
+}
+
 // ForgeInspectResponse is the response from forge.Inspect().
 type ForgeInspectResponse struct {
 	CertificatePem string `json:"certificate_pem"`
@@ -971,6 +1021,20 @@ type KeepHealthResponse struct {
 	Status string `json:"status"`
 }
 
+// KeepHelloResponse is the response from keep.Hello().
+type KeepHelloResponse struct {
+	// Engine — Canonical engine name (e.g., "keep")
+	Engine string `json:"engine"`
+	// Version — Engine's semantic version
+	Version string `json:"version"`
+	// Protocol — Wire protocol identifier (e.g., "RESP3/1")
+	Protocol string `json:"protocol"`
+	// Commands — Supported command surface (uppercase, subcommands space-separated)
+	Commands []any `json:"commands"`
+	// Capabilities — Cross-cutting capability tags; may be empty
+	Capabilities []any `json:"capabilities"`
+}
+
 // KeepListResponse is the response from keep.List().
 type KeepListResponse struct {
 	Status string `json:"status"`
@@ -1089,6 +1153,15 @@ type CourierHealthResponse struct {
 	Status string `json:"status"`
 }
 
+// CourierHelloResponse is the response from courier.Hello().
+type CourierHelloResponse struct {
+	Capabilities []any `json:"capabilities"`
+	Commands []any `json:"commands"`
+	Engine string `json:"engine"`
+	Protocol string `json:"protocol"`
+	Version string `json:"version"`
+}
+
 // CourierMetricsResponse is the response from courier.Metrics().
 type CourierMetricsResponse struct {
 	Delivered int `json:"delivered"`
@@ -1146,6 +1219,15 @@ type ChronicleErrorsResponse struct {
 type ChronicleHealthResponse struct {
 	Events int `json:"events"`
 	Status string `json:"status"`
+}
+
+// ChronicleHelloResponse is the response from chronicle.Hello().
+type ChronicleHelloResponse struct {
+	Capabilities []any `json:"capabilities"`
+	Commands []any `json:"commands"`
+	Engine string `json:"engine"`
+	Protocol string `json:"protocol"`
+	Version string `json:"version"`
 }
 
 // ChronicleHotspotsResponse is the response from chronicle.Hotspots().
@@ -1213,6 +1295,15 @@ type StashFingerprintResponse struct {
 	S3Key string `json:"s3_key"`
 	Status string `json:"status"`
 	ViewerId string `json:"viewer_id"`
+}
+
+// StashHelloResponse is the response from stash.Hello().
+type StashHelloResponse struct {
+	Capabilities []any `json:"capabilities"`
+	Commands []any `json:"commands"`
+	Engine string `json:"engine"`
+	Protocol string `json:"protocol"`
+	Version string `json:"version"`
 }
 
 // StashInspectResponse is the response from stash.Inspect().

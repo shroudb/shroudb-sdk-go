@@ -95,6 +95,24 @@ func (ns *VeilNamespace) Health(ctx context.Context) (*VeilHealthResponse, error
 	return &resp, nil
 }
 
+// Hello executes HELLO — Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version.
+func (ns *VeilNamespace) Hello(ctx context.Context) (*VeilHelloResponse, error) {
+	args := []string{"HELLO"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp VeilHelloResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // IndexCreate executes INDEX CREATE — Create a new blind index with a fresh HMAC key
 func (ns *VeilNamespace) IndexCreate(ctx context.Context, name string) (*VeilIndexCreateResponse, error) {
 	args := []string{"INDEX", "CREATE"}

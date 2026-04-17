@@ -227,6 +227,24 @@ func (ns *ForgeNamespace) Health(ctx context.Context) (*ForgeHealthResponse, err
 	return &resp, nil
 }
 
+// Hello executes HELLO — Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version.
+func (ns *ForgeNamespace) Hello(ctx context.Context) (*ForgeHelloResponse, error) {
+	args := []string{"HELLO"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ForgeHelloResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Inspect executes INSPECT — Get certificate details
 func (ns *ForgeNamespace) Inspect(ctx context.Context, ca string, serial string) (*ForgeInspectResponse, error) {
 	args := []string{"INSPECT"}

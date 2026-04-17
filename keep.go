@@ -139,6 +139,24 @@ func (ns *KeepNamespace) Health(ctx context.Context) (*KeepHealthResponse, error
 	return &resp, nil
 }
 
+// Hello executes HELLO — Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version.
+func (ns *KeepNamespace) Hello(ctx context.Context) (*KeepHelloResponse, error) {
+	args := []string{"HELLO"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp KeepHelloResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // List executes LIST — List secret paths, optionally filtered by prefix. Excludes deleted secrets.
 func (ns *KeepNamespace) List(ctx context.Context, prefix string) (*KeepListResponse, error) {
 	args := []string{"LIST"}

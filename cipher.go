@@ -156,6 +156,24 @@ func (ns *CipherNamespace) Health(ctx context.Context) (*CipherHealthResponse, e
 	return &resp, nil
 }
 
+// Hello executes HELLO — Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version.
+func (ns *CipherNamespace) Hello(ctx context.Context) (*CipherHelloResponse, error) {
+	args := []string{"HELLO"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp CipherHelloResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // KeyInfo executes KEY_INFO — Get keyring metadata and key version information
 func (ns *CipherNamespace) KeyInfo(ctx context.Context, keyring string) (*CipherKeyInfoResponse, error) {
 	args := []string{"KEY_INFO"}

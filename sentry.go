@@ -94,6 +94,24 @@ func (ns *SentryNamespace) Health(ctx context.Context) (*SentryHealthResponse, e
 	return &resp, nil
 }
 
+// Hello executes HELLO — Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version.
+func (ns *SentryNamespace) Hello(ctx context.Context) (*SentryHelloResponse, error) {
+	args := []string{"HELLO"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp SentryHelloResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Jwks executes JWKS — Get the JSON Web Key Set for verifying decision tokens
 func (ns *SentryNamespace) Jwks(ctx context.Context) (*SentryJwksResponse, error) {
 	args := []string{"JWKS"}

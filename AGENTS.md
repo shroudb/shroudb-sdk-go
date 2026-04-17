@@ -79,6 +79,7 @@ resp, err := db.Shroudb.Delete(ctx, "namespace", "key")
 | `Encrypt` | `ctx, keyring, plaintext, opts` | `*CipherEncryptResponse, error` | Encrypt plaintext with the active key version |
 | `GenerateDataKey` | `ctx, keyring, opts` | `*CipherGenerateDataKeyResponse, error` | Generate a data encryption key (envelope encryption pattern) |
 | `Health` | `ctx` | `*CipherHealthResponse, error` | Check server health |
+| `Hello` | `ctx` | `*CipherHelloResponse, error` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `KeyInfo` | `ctx, keyring` | `*CipherKeyInfoResponse, error` | Get keyring metadata and key version information |
 | `KeyringCreate` | `ctx, name, algorithm, opts` | `*CipherKeyringCreateResponse, error` | Create a new keyring with its first active key |
 | `KeyringList` | `ctx` | `*CipherKeyringListResponse, error` | List all keyring names |
@@ -116,6 +117,7 @@ resp, err := db.Cipher.GenerateDataKey(ctx, "my-keyring")
 | `EnvelopeUpdate` | `ctx, schema, id, json` | `*SigilEnvelopeUpdateResponse, error` | Update non-credential fields on an existing envelope |
 | `EnvelopeVerify` | `ctx, schema, id, field, value` | `*SigilEnvelopeVerifyResponse, error` | Verify a credential field on an envelope by explicit field name |
 | `Health` | `ctx` | `*SigilHealthResponse, error` | Health check |
+| `Hello` | `ctx` | `*SigilHelloResponse, error` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Jwks` | `ctx, schema` | `error` | Get the JSON Web Key Set for external token verification |
 | `PasswordChange` | `ctx, schema, id, old, new` | `*SigilPasswordChangeResponse, error` | Sugar: change password. Infers credential field from schema. Equivalent to CREDENTIAL CHANGE with implicit field. |
 | `PasswordImport` | `ctx, schema, id, hash, opts` | `*SigilPasswordImportResponse, error` | Sugar: import pre-hashed password. Infers credential field from schema. Equivalent to CREDENTIAL IMPORT with implicit field. |
@@ -159,6 +161,7 @@ resp, err := db.Sigil.CredentialReset(ctx, "myapp", "alice", "email", "new")
 | `CommandList` | `ctx` | `*VeilCommandListResponse, error` | List all supported commands |
 | `Delete` | `ctx, index, id` | `*VeilDeleteResponse, error` | Remove an entry's blind tokens from the index |
 | `Health` | `ctx` | `*VeilHealthResponse, error` | Health check |
+| `Hello` | `ctx` | `*VeilHelloResponse, error` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `IndexCreate` | `ctx, name` | `*VeilIndexCreateResponse, error` | Create a new blind index with a fresh HMAC key |
 | `IndexDestroy` | `ctx, name` | `*VeilIndexDestroyResponse, error` | Crypto-shred an index: zeroize the HMAC key, delete all entries, and remove the index. After destruction, the index name can be reused. |
 | `IndexInfo` | `ctx, name` | `*VeilIndexInfoResponse, error` | Get information about a blind index |
@@ -191,6 +194,7 @@ resp, err := db.Veil.IndexDestroy(ctx, "my-keyring")
 | `CommandList` | `ctx` | `*SentryCommandListResponse, error` | List all supported commands |
 | `Evaluate` | `ctx, json` | `*SentryEvaluateResponse, error` | Evaluate an authorization request against policies and return a signed decision |
 | `Health` | `ctx` | `*SentryHealthResponse, error` | Server health check |
+| `Hello` | `ctx` | `*SentryHelloResponse, error` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Jwks` | `ctx` | `*SentryJwksResponse, error` | Get the JSON Web Key Set for verifying decision tokens |
 | `KeyInfo` | `ctx` | `*SentryKeyInfoResponse, error` | Get signing key metadata |
 | `KeyRotate` | `ctx, opts` | `*SentryKeyRotateResponse, error` | Rotate the signing key |
@@ -228,6 +232,7 @@ resp, err := db.Sentry.PolicyDelete(ctx, "name")
 | `ConfigGet` | `ctx, key` | `*ForgeConfigGetResponse, error` | Get a runtime configuration value |
 | `ConfigSet` | `ctx, key, value` | `*ForgeConfigSetResponse, error` | Set a runtime configuration value (only scheduler_interval_secs is mutable) |
 | `Health` | `ctx` | `*ForgeHealthResponse, error` | Health check |
+| `Hello` | `ctx` | `*ForgeHelloResponse, error` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Inspect` | `ctx, ca, serial` | `*ForgeInspectResponse, error` | Get certificate details |
 | `Issue` | `ctx, ca, subject, profile, opts` | `*ForgeIssueResponse, error` | Issue a new certificate. Returns cert + private key (private key never stored). |
 | `IssueFromCsr` | `ctx, ca, csr_pem, profile, opts` | `*ForgeIssueFromCsrResponse, error` | Issue a certificate from a PEM-encoded CSR |
@@ -258,6 +263,7 @@ resp, err := db.Forge.CaInfo(ctx, "name")
 | `Delete` | `ctx, path` | `*KeepDeleteResponse, error` | Soft-delete a secret. Version history is preserved. |
 | `Get` | `ctx, path, opts` | `*KeepGetResponse, error` | Retrieve a secret value. Returns the latest version by default. |
 | `Health` | `ctx` | `*KeepHealthResponse, error` | Health check. |
+| `Hello` | `ctx` | `*KeepHelloResponse, error` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `List` | `ctx, prefix?` | `*KeepListResponse, error` | List secret paths, optionally filtered by prefix. Excludes deleted secrets. |
 | `Ping` | `ctx` | `error` | Ping-pong. |
 | `Purge` | `ctx, path` | `*KeepPurgeResponse, error` | Permanently remove a secret and all its versions. Irreversible — used for GDPR right-to-erasure compliance. After purge, GET returns not-found (not deleted). |
@@ -292,6 +298,7 @@ resp, err := db.Keep.List(ctx, "prefix")
 | `DeliveryGet` | `ctx, id` | `*CourierDeliveryGetResponse, error` | Get a delivery receipt by ID |
 | `DeliveryList` | `ctx, opts` | `*CourierDeliveryListResponse, error` | List delivery receipts, optionally filtered by channel |
 | `Health` | `ctx` | `*CourierHealthResponse, error` | Server health check |
+| `Hello` | `ctx` | `*CourierHelloResponse, error` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Metrics` | `ctx` | `*CourierMetricsResponse, error` | Get delivery metrics (total, success, failure counts, per-channel breakdown) |
 | `NotifyEvent` | `ctx, channel, subject, body` | `*CourierNotifyEventResponse, error` | Trigger a notification on a pre-configured channel (e.g. rotation/expiry alerts) |
 | `Ping` | `ctx` | `error` | Connectivity check |
@@ -318,6 +325,7 @@ resp, err := db.Courier.ChannelGet(ctx, "name")
 | `Count` | `ctx, opts` | `*ChronicleCountResponse, error` | Count events matching filter predicates |
 | `Errors` | `ctx, opts` | `*ChronicleErrorsResponse, error` | Operations ranked by error rate in the given time window |
 | `Health` | `ctx` | `*ChronicleHealthResponse, error` | Health check |
+| `Hello` | `ctx` | `*ChronicleHelloResponse, error` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Hotspots` | `ctx, opts` | `*ChronicleHotspotsResponse, error` | Top 20 resources by access count in the given time window |
 | `Ingest` | `ctx, event_json` | `*ChronicleIngestResponse, error` | Ingest a single structured audit event |
 | `IngestBatch` | `ctx, events_json` | `*ChronicleIngestBatchResponse, error` | Ingest multiple events in a single call |
@@ -343,6 +351,7 @@ resp, err := db.Chronicle.IngestBatch(ctx, map[string]any{})
 | `Command` | `ctx` | `error` | List supported commands |
 | `Fingerprint` | `ctx, id, viewer_id, opts` | `*StashFingerprintResponse, error` | Create a viewer-specific encrypted copy of a blob for leak tracing |
 | `Health` | `ctx` | `error` | Health check |
+| `Hello` | `ctx` | `*StashHelloResponse, error` | Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version. |
 | `Inspect` | `ctx, id` | `*StashInspectResponse, error` | Read blob metadata without downloading or decrypting |
 | `List` | `ctx, opts` | `*StashListResponse, error` | List blobs for the current tenant |
 | `Ping` | `ctx` | `error` | Ping-pong |

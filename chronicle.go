@@ -144,6 +144,24 @@ func (ns *ChronicleNamespace) Health(ctx context.Context) (*ChronicleHealthRespo
 	return &resp, nil
 }
 
+// Hello executes HELLO — Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version.
+func (ns *ChronicleNamespace) Hello(ctx context.Context) (*ChronicleHelloResponse, error) {
+	args := []string{"HELLO"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ChronicleHelloResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Hotspots executes HOTSPOTS — Top 20 resources by access count in the given time window
 func (ns *ChronicleNamespace) Hotspots(ctx context.Context, opts *ChronicleHotspotsOptions) (*ChronicleHotspotsResponse, error) {
 	args := []string{"HOTSPOTS"}

@@ -290,6 +290,24 @@ func (ns *SigilNamespace) Health(ctx context.Context) (*SigilHealthResponse, err
 	return &resp, nil
 }
 
+// Hello executes HELLO — Engine identity handshake — returns engine name, version, wire protocol, supported commands, and capability tags. Pre-auth; clients issue this on connect to verify they are talking to the expected engine and version.
+func (ns *SigilNamespace) Hello(ctx context.Context) (*SigilHelloResponse, error) {
+	args := []string{"HELLO"}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp SigilHelloResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Jwks executes JWKS — Get the JSON Web Key Set for external token verification
 func (ns *SigilNamespace) Jwks(ctx context.Context, schema string) error {
 	args := []string{"JWKS"}
