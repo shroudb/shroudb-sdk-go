@@ -25,6 +25,16 @@ type ShroudbDeleteResponse struct {
 	Version int `json:"version"`
 }
 
+// ShroudbDelifResponse is the response from shroudb.Delif().
+type ShroudbDelifResponse struct {
+	Version int `json:"version"`
+}
+
+// ShroudbDelprefixResponse is the response from shroudb.Delprefix().
+type ShroudbDelprefixResponse struct {
+	Deleted int `json:"deleted"`
+}
+
 // ShroudbGetResponse is the response from shroudb.Get().
 type ShroudbGetResponse struct {
 	Key any `json:"key"`
@@ -73,6 +83,11 @@ type ShroudbPutResponse struct {
 	Version int `json:"version"`
 }
 
+// ShroudbPutifResponse is the response from shroudb.Putif().
+type ShroudbPutifResponse struct {
+	Version int `json:"version"`
+}
+
 // ShroudbRekeyResponse is the response from shroudb.Rekey().
 type ShroudbRekeyResponse struct {
 	Message string `json:"message"`
@@ -90,6 +105,12 @@ type ShroudbRekeyStatusResponse struct {
 // ShroudbVersionsResponse is the response from shroudb.Versions().
 type ShroudbVersionsResponse struct {
 	Versions []any `json:"versions"`
+}
+
+// ShroudbDelifOptions contains optional parameters for shroudb.Delif().
+type ShroudbDelifOptions struct {
+	// Expect — Expected current version of the active entry
+	Expect *int `json:"expect,omitempty"`
 }
 
 // ShroudbGetOptions contains optional parameters for shroudb.Get().
@@ -128,6 +149,16 @@ type ShroudbNamespaceListOptions struct {
 
 // ShroudbPutOptions contains optional parameters for shroudb.Put().
 type ShroudbPutOptions struct {
+	// Meta — JSON metadata object
+	Meta any `json:"meta,omitempty"`
+	// Ttl — Optional expiry in milliseconds. The entry is auto-deleted at or after server wall clock reaches (now_ms + TTL). TTL is entry-level and is NOT inherited across writes: a subsequent PUT/PUTIF without TTL writes a TTL-less entry.
+	Ttl *int `json:"ttl,omitempty"`
+}
+
+// ShroudbPutifOptions contains optional parameters for shroudb.Putif().
+type ShroudbPutifOptions struct {
+	// Expect — Expected current version (0 = key must not exist / be tombstoned)
+	Expect *int `json:"expect,omitempty"`
 	// Meta — JSON metadata object
 	Meta any `json:"meta,omitempty"`
 }

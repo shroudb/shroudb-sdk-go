@@ -97,6 +97,8 @@ const (
 	ErrPIPELINE_ABORTED = "PIPELINE_ABORTED"
 	// ErrPOLICY — Operation denied by keyring policy
 	ErrPOLICY = "POLICY"
+	// ErrPREFIX_TOO_LARGE — A DELPREFIX call matched more keys than the configured per-call cap. No keys were deleted. Caller should refine the prefix and retry. Wire format: `PREFIXTOOLARGE matched=<n> limit=<m>`.
+	ErrPREFIX_TOO_LARGE = "PREFIX_TOO_LARGE"
 	// ErrRETIRED — Key version is retired — use REWRAP
 	ErrRETIRED = "RETIRED"
 	// ErrREVOKED — Blob has been soft-revoked
@@ -121,6 +123,8 @@ const (
 	ErrVALIDATION_FAILED = "VALIDATION_FAILED"
 	// ErrVERIFICATION_FAILED — Credential verification failed (wrong password)
 	ErrVERIFICATION_FAILED = "VERIFICATION_FAILED"
+	// ErrVERSION_CONFLICT — Compare-and-swap precondition failed. The error carries the actual current version so clients can retry without re-reading. Wire format: `VERSIONCONFLICT current=<n>`.
+	ErrVERSION_CONFLICT = "VERSION_CONFLICT"
 	// ErrVERSION_NOTFOUND — Requested version does not exist
 	ErrVERSION_NOTFOUND = "VERSION_NOTFOUND"
 	// ErrVERSION_NOT_FOUND — Requested version does not exist

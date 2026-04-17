@@ -40,6 +40,8 @@ defer db.Close()
 | `ConfigGet` | `ctx, key` | `*ShroudbConfigGetResponse, error` | Read a runtime configuration value |
 | `ConfigSet` | `ctx, key, value` | `error` | Set a runtime configuration value (admin only). Only registered config keys are accepted; unknown keys return an error. Values are type-checked against the key's schema (u64, bool, string). Valid keys: max_segment_bytes, max_segment_entries, snapshot_entry_threshold, snapshot_time_threshold_secs. |
 | `Delete` | `ctx, namespace, key` | `*ShroudbDeleteResponse, error` | Delete a key by writing a tombstone |
+| `Delif` | `ctx, namespace, key, opts` | `*ShroudbDelifResponse, error` | Compare-and-swap DELETE. Writes a tombstone only if the key's current active version equals EXPECT. On mismatch returns VERSIONCONFLICT. Missing or tombstoned keys return NOTFOUND regardless of EXPECT. |
+| `Delprefix` | `ctx, namespace, prefix` | `*ShroudbDelprefixResponse, error` | Tombstone every active key in the namespace whose byte representation starts with the given prefix. Held under the per-namespace write lock. Empty prefix is rejected — use NAMESPACE DROP for full teardown. Over the per-call cap, returns PREFIXTOOLARGE with no partial deletion. |
 | `Get` | `ctx, namespace, key, META?, opts` | `*ShroudbGetResponse, error` | Retrieve the value at a key |
 | `Health` | `ctx` | `*ShroudbHealthResponse, error` | Check server health |
 | `List` | `ctx, namespace, opts` | `*ShroudbListResponse, error` | List active keys in a namespace. Returns an error if the CURSOR value does not correspond to a key that exists in the namespace. |
@@ -52,6 +54,7 @@ defer db.Close()
 | `Ping` | `ctx` | `*ShroudbPingResponse, error` | Test connectivity |
 | `Pipeline` | `ctx, count` | `error` | Execute commands atomically (all succeed or all roll back) |
 | `Put` | `ctx, namespace, key, value?, opts` | `*ShroudbPutResponse, error` | Store a value at the given key. Auto-increments version. |
+| `Putif` | `ctx, namespace, key, value, opts` | `*ShroudbPutifResponse, error` | Compare-and-swap PUT. Writes only if the key's current active version equals EXPECT. On mismatch returns VERSIONCONFLICT carrying the actual current version. EXPECT 0 means "key must not exist or must be tombstoned". |
 | `Rekey` | `ctx` | `*ShroudbRekeyResponse, error` | Begin online rekey (zero-downtime master key rotation) |
 | `RekeyStatus` | `ctx` | `*ShroudbRekeyStatusResponse, error` | Query progress of an in-flight rekey operation |
 | `Subscribe` | `ctx, namespace, opts` | `error` | Subscribe to change events on a namespace |
@@ -398,7 +401,9 @@ if err != nil {
 | `NOT_FOUND` | `ErrNOT_FOUND` | Key or resource does not exist |
 | `NOT_READY` | `ErrNOT_READY` | Server is not in READY state |
 | `PIPELINE_ABORTED` | `ErrPIPELINE_ABORTED` | Pipeline command failed, all commands rolled back |
+| `PREFIX_TOO_LARGE` | `ErrPREFIX_TOO_LARGE` | A DELPREFIX call matched more keys than the configured per-call cap. No keys were deleted. Caller should refine the prefix and retry. Wire format: `PREFIXTOOLARGE matched=<n> limit=<m>`. |
 | `VALIDATION_FAILED` | `ErrVALIDATION_FAILED` | Metadata validation failed against namespace schema |
+| `VERSION_CONFLICT` | `ErrVERSION_CONFLICT` | Compare-and-swap precondition failed. The error carries the actual current version so clients can retry without re-reading. Wire format: `VERSIONCONFLICT current=<n>`. |
 | `VERSION_NOT_FOUND` | `ErrVERSION_NOT_FOUND` | Requested version does not exist |
 | `BADARG` | `ErrBADARG` | Missing or invalid argument |
 | `DISABLED` | `ErrDISABLED` | Keyring is disabled |

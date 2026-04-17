@@ -105,6 +105,51 @@ func (ns *ShroudbNamespace) Delete(ctx context.Context, namespace string, key st
 	return &resp, nil
 }
 
+// Delif executes DELIF — Compare-and-swap DELETE. Writes a tombstone only if the key's current active version equals EXPECT. On mismatch returns VERSIONCONFLICT. Missing or tombstoned keys return NOTFOUND regardless of EXPECT.
+func (ns *ShroudbNamespace) Delif(ctx context.Context, namespace string, key string, opts *ShroudbDelifOptions) (*ShroudbDelifResponse, error) {
+	args := []string{"DELIF"}
+	args = append(args, namespace)
+	args = append(args, key)
+	if opts != nil {
+		if opts.Expect != nil {
+			args = append(args, "EXPECT", fmt.Sprint(*opts.Expect))
+		}
+	}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ShroudbDelifResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// Delprefix executes DELPREFIX — Tombstone every active key in the namespace whose byte representation starts with the given prefix. Held under the per-namespace write lock. Empty prefix is rejected — use NAMESPACE DROP for full teardown. Over the per-call cap, returns PREFIXTOOLARGE with no partial deletion.
+func (ns *ShroudbNamespace) Delprefix(ctx context.Context, namespace string, prefix string) (*ShroudbDelprefixResponse, error) {
+	args := []string{"DELPREFIX"}
+	args = append(args, namespace)
+	args = append(args, prefix)
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ShroudbDelprefixResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
 // Get executes GET — Retrieve the value at a key
 func (ns *ShroudbNamespace) Get(ctx context.Context, namespace string, key string, META bool, opts *ShroudbGetOptions) (*ShroudbGetResponse, error) {
 	args := []string{"GET"}
@@ -338,12 +383,47 @@ func (ns *ShroudbNamespace) Put(ctx context.Context, namespace string, key strin
 				args = append(args, "META", string(jsonBytes))
 			}
 		}
+		if opts.Ttl != nil {
+			args = append(args, "TTL", fmt.Sprint(*opts.Ttl))
+		}
 	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
 	if err != nil {
 		return nil, err
 	}
 	var resp ShroudbPutResponse
+	jsonBytes, err := json.Marshal(raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal response: %w", err)
+	}
+	if err := json.Unmarshal(jsonBytes, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+	return &resp, nil
+}
+
+// Putif executes PUTIF — Compare-and-swap PUT. Writes only if the key's current active version equals EXPECT. On mismatch returns VERSIONCONFLICT carrying the actual current version. EXPECT 0 means "key must not exist or must be tombstoned".
+func (ns *ShroudbNamespace) Putif(ctx context.Context, namespace string, key string, value string, opts *ShroudbPutifOptions) (*ShroudbPutifResponse, error) {
+	args := []string{"PUTIF"}
+	args = append(args, namespace)
+	args = append(args, key)
+	args = append(args, value)
+	if opts != nil {
+		if opts.Expect != nil {
+			args = append(args, "EXPECT", fmt.Sprint(*opts.Expect))
+		}
+		if opts.Meta != nil {
+			jsonBytes, err := json.Marshal(opts.Meta)
+			if err == nil {
+				args = append(args, "META", string(jsonBytes))
+			}
+		}
+	}
+	raw, err := ns.transport.Execute(ctx, ns.engine, args)
+	if err != nil {
+		return nil, err
+	}
+	var resp ShroudbPutifResponse
 	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("marshal response: %w", err)

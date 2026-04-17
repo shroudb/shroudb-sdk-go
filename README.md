@@ -116,6 +116,8 @@ Encrypted key-value database
 | `ConfigGet(ctx, key)` | Read a runtime configuration value |
 | `ConfigSet(ctx, key, value)` | Set a runtime configuration value (admin only). Only registered config keys are accepted; unknown keys return an error. Values are type-checked against the key's schema (u64, bool, string). Valid keys: max_segment_bytes, max_segment_entries, snapshot_entry_threshold, snapshot_time_threshold_secs. |
 | `Delete(ctx, namespace, key)` | Delete a key by writing a tombstone |
+| `Delif(ctx, namespace, key, opts)` | Compare-and-swap DELETE. Writes a tombstone only if the key's current active version equals EXPECT. On mismatch returns VERSIONCONFLICT. Missing or tombstoned keys return NOTFOUND regardless of EXPECT. |
+| `Delprefix(ctx, namespace, prefix)` | Tombstone every active key in the namespace whose byte representation starts with the given prefix. Held under the per-namespace write lock. Empty prefix is rejected — use NAMESPACE DROP for full teardown. Over the per-call cap, returns PREFIXTOOLARGE with no partial deletion. |
 | `Get(ctx, namespace, key, META, opts)` | Retrieve the value at a key |
 | `Health(ctx)` | Check server health |
 | `List(ctx, namespace, opts)` | List active keys in a namespace. Returns an error if the CURSOR value does not correspond to a key that exists in the namespace. |
@@ -128,6 +130,7 @@ Encrypted key-value database
 | `Ping(ctx)` | Test connectivity |
 | `Pipeline(ctx, commands, requestID)` | Execute commands atomically (all succeed or all roll back) |
 | `Put(ctx, namespace, key, value, opts)` | Store a value at the given key. Auto-increments version. |
+| `Putif(ctx, namespace, key, value, opts)` | Compare-and-swap PUT. Writes only if the key's current active version equals EXPECT. On mismatch returns VERSIONCONFLICT carrying the actual current version. EXPECT 0 means "key must not exist or must be tombstoned". |
 | `Rekey(ctx)` | Begin online rekey (zero-downtime master key rotation) |
 | `RekeyStatus(ctx)` | Query progress of an in-flight rekey operation |
 | `Subscribe(ctx, namespace, opts)` | Subscribe to change events on a namespace |
