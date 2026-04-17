@@ -318,12 +318,9 @@ func (ns *ShroudbNamespace) Ping(ctx context.Context) (*ShroudbPingResponse, err
 	return &resp, nil
 }
 
-// Pipeline executes PIPELINE — Execute commands atomically (all succeed or all roll back)
-func (ns *ShroudbNamespace) Pipeline(ctx context.Context, count int) error {
-	args := []string{"PIPELINE"}
-	args = append(args, fmt.Sprint(count))
-	_, err := ns.transport.Execute(ctx, ns.engine, args)
-	return err
+// Pipeline — Execute commands atomically (all succeed or all roll back)
+func (ns *ShroudbNamespace) Pipeline(ctx context.Context, commands [][]string, requestID string) ([]map[string]any, error) {
+	return ns.transport.ExecutePipeline(ctx, ns.engine, commands, requestID)
 }
 
 // Put executes PUT — Store a value at the given key. Auto-increments version.

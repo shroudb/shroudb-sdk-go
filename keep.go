@@ -101,6 +101,26 @@ func (ns *KeepNamespace) Get(ctx context.Context, path string, opts *KeepGetOpti
 	return &resp, nil
 }
 
+// KeepGetCall carries one call for the GetMany batch helper.
+type KeepGetCall struct {
+	Path string
+	Version *int
+}
+
+// GetMany — batch variant: pipelines N independent calls over one connection (ordered, not atomic).
+func (ns *KeepNamespace) GetMany(ctx context.Context, calls []KeepGetCall) ([]map[string]any, error) {
+	argsList := make([][]string, 0, len(calls))
+	for _, call := range calls {
+		args := []string{"GET"}
+		args = append(args, fmt.Sprint(call.Path))
+		if call.Version != nil {
+			args = append(args, "VERSION", fmt.Sprint(*call.Version))
+		}
+		argsList = append(argsList, args)
+	}
+	return ns.transport.ExecuteMany(ctx, ns.engine, argsList)
+}
+
 // Health executes HEALTH — Health check.
 func (ns *KeepNamespace) Health(ctx context.Context) (*KeepHealthResponse, error) {
 	args := []string{"HEALTH"}

@@ -10,6 +10,22 @@ type Transport interface {
 	// Execute sends a command and returns the parsed response.
 	Execute(ctx context.Context, engine string, args []string) (map[string]any, error)
 
+	// ExecuteMany sends N independent commands in one round-trip (client-side
+	// pipelining). Each command is a separate RESP3 frame on a single
+	// connection; N responses are returned in order. Unlike ExecutePipeline,
+	// this is NOT atomic — each command is independently dispatched,
+	// authorized, and audited by the server.
+	ExecuteMany(ctx context.Context, engine string, argsList [][]string) ([]map[string]any, error)
+
+	// ExecutePipeline sends a server-side atomic PIPELINE with N nested
+	// sub-command arrays in a single RESP3 frame and returns one result per
+	// sub-command, in order. Pass a non-empty requestID for idempotent retry —
+	// repeated calls with the same ID return the cached result without
+	// re-executing.
+	//
+	// Only supported over RESP3; HTTP transports return ErrPipelineNotSupported.
+	ExecutePipeline(ctx context.Context, engine string, commands [][]string, requestID string) ([]map[string]any, error)
+
 	// Close releases all connections held by this transport.
 	Close() error
 }

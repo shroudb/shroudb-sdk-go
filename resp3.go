@@ -38,6 +38,33 @@ func (c *resp3Conn) send(args []string) error {
 	return err
 }
 
+// sendPipeline writes a PIPELINE frame: outer array of
+// [prefix..., REQUEST_ID?, ...nested sub-command arrays].
+func (c *resp3Conn) sendPipeline(prefix []string, commands [][]string, requestID string) error {
+	var b strings.Builder
+	keywordCount := 0
+	if requestID != "" {
+		keywordCount = 2
+	}
+	outerLen := len(prefix) + keywordCount + len(commands)
+	fmt.Fprintf(&b, "*%d\r\n", outerLen)
+	for _, p := range prefix {
+		fmt.Fprintf(&b, "$%d\r\n%s\r\n", len(p), p)
+	}
+	if requestID != "" {
+		b.WriteString("$10\r\nREQUEST_ID\r\n")
+		fmt.Fprintf(&b, "$%d\r\n%s\r\n", len(requestID), requestID)
+	}
+	for _, sub := range commands {
+		fmt.Fprintf(&b, "*%d\r\n", len(sub))
+		for _, arg := range sub {
+			fmt.Fprintf(&b, "$%d\r\n%s\r\n", len(arg), arg)
+		}
+	}
+	_, err := c.conn.Write([]byte(b.String()))
+	return err
+}
+
 func (c *resp3Conn) readReply() (any, error) {
 	line, err := c.reader.ReadString('\n')
 	if err != nil {
@@ -262,6 +289,57 @@ func (t *Resp3Transport) Execute(ctx context.Context, engine string, args []stri
 	return parseResp3Response(raw), nil
 }
 
+// ExecuteMany sends N commands over one connection and returns N responses in order.
+func (t *Resp3Transport) ExecuteMany(ctx context.Context, engine string, argsList [][]string) ([]map[string]any, error) {
+	if len(argsList) == 0 {
+		return []map[string]any{}, nil
+	}
+	conn, err := t.pool.acquire()
+	if err != nil {
+		return nil, err
+	}
+	defer t.pool.release(conn)
+
+	out := make([]map[string]any, len(argsList))
+	for i, args := range argsList {
+		if err := conn.send(args); err != nil {
+			return nil, err
+		}
+		raw, err := conn.readReply()
+		if err != nil {
+			return nil, err
+		}
+		out[i] = parseResp3Response(raw)
+	}
+	return out, nil
+}
+
+// ExecutePipeline sends a server-side atomic PIPELINE over RESP3.
+func (t *Resp3Transport) ExecutePipeline(ctx context.Context, engine string, commands [][]string, requestID string) ([]map[string]any, error) {
+	conn, err := t.pool.acquire()
+	if err != nil {
+		return nil, err
+	}
+	defer t.pool.release(conn)
+
+	if err := conn.sendPipeline([]string{"PIPELINE"}, commands, requestID); err != nil {
+		return nil, err
+	}
+	raw, err := conn.readReply()
+	if err != nil {
+		return nil, err
+	}
+	items, ok := raw.([]any)
+	if !ok {
+		return nil, &ShrouDBError{Code: "ERR", Message: "PIPELINE response was not an array"}
+	}
+	out := make([]map[string]any, len(items))
+	for i, item := range items {
+		out[i] = parseResp3Response(item)
+	}
+	return out, nil
+}
+
 // Close releases all pooled connections.
 func (t *Resp3Transport) Close() error {
 	return t.pool.close()
@@ -302,6 +380,63 @@ func (t *MoatResp3Transport) Execute(ctx context.Context, engine string, args []
 		return nil, err
 	}
 	return parseResp3Response(raw), nil
+}
+
+// ExecuteMany sends N engine-prefixed commands over one connection.
+func (t *MoatResp3Transport) ExecuteMany(ctx context.Context, engine string, argsList [][]string) ([]map[string]any, error) {
+	if len(argsList) == 0 {
+		return []map[string]any{}, nil
+	}
+	conn, err := t.pool.acquire()
+	if err != nil {
+		return nil, err
+	}
+	defer t.pool.release(conn)
+
+	prefix := strings.ToUpper(engine)
+	out := make([]map[string]any, len(argsList))
+	for i, args := range argsList {
+		prefixed := make([]string, 0, len(args)+1)
+		prefixed = append(prefixed, prefix)
+		prefixed = append(prefixed, args...)
+		if err := conn.send(prefixed); err != nil {
+			return nil, err
+		}
+		raw, err := conn.readReply()
+		if err != nil {
+			return nil, err
+		}
+		out[i] = parseResp3Response(raw)
+	}
+	return out, nil
+}
+
+// ExecutePipeline sends a server-side atomic PIPELINE through a Moat gateway,
+// prefixing the frame with the uppercase engine name.
+func (t *MoatResp3Transport) ExecutePipeline(ctx context.Context, engine string, commands [][]string, requestID string) ([]map[string]any, error) {
+	conn, err := t.pool.acquire()
+	if err != nil {
+		return nil, err
+	}
+	defer t.pool.release(conn)
+
+	prefix := []string{strings.ToUpper(engine), "PIPELINE"}
+	if err := conn.sendPipeline(prefix, commands, requestID); err != nil {
+		return nil, err
+	}
+	raw, err := conn.readReply()
+	if err != nil {
+		return nil, err
+	}
+	items, ok := raw.([]any)
+	if !ok {
+		return nil, &ShrouDBError{Code: "ERR", Message: "PIPELINE response was not an array"}
+	}
+	out := make([]map[string]any, len(items))
+	for i, item := range items {
+		out[i] = parseResp3Response(item)
+	}
+	return out, nil
 }
 
 // Close releases all pooled connections.

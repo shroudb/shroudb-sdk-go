@@ -126,7 +126,7 @@ Encrypted key-value database
 | `NamespaceList(ctx, opts)` | List namespaces (filtered by token grants) |
 | `NamespaceValidate(ctx, name)` | Check existing entries against current MetaSchema |
 | `Ping(ctx)` | Test connectivity |
-| `Pipeline(ctx, count)` | Execute commands atomically (all succeed or all roll back) |
+| `Pipeline(ctx, commands, requestID)` | Execute commands atomically (all succeed or all roll back) |
 | `Put(ctx, namespace, key, value, opts)` | Store a value at the given key. Auto-increments version. |
 | `Rekey(ctx)` | Begin online rekey (zero-downtime master key rotation) |
 | `RekeyStatus(ctx)` | Query progress of an in-flight rekey operation |

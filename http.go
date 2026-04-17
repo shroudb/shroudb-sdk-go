@@ -6,11 +6,17 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
 )
+
+// ErrPipelineNotSupported is returned by HttpTransport.ExecutePipeline because
+// PIPELINE is a RESP3-only command. Use Resp3Transport or MoatResp3Transport
+// to execute a server-side atomic pipeline.
+var ErrPipelineNotSupported = errors.New("shroudb: PIPELINE is a RESP3-only command; use Resp3Transport or MoatResp3Transport")
 
 // HttpTransport implements Transport via HTTP POST to a Moat gateway.
 // Commands are sent as JSON to /v1/{engine}.
@@ -87,6 +93,24 @@ func (t *HttpTransport) Execute(ctx context.Context, engine string, args []strin
 		return nil, fmt.Errorf("http: unmarshal response: %w", err)
 	}
 	return result, nil
+}
+
+// ExecuteMany falls back to sequential HTTP requests since HTTP has no pipelining.
+func (t *HttpTransport) ExecuteMany(ctx context.Context, engine string, argsList [][]string) ([]map[string]any, error) {
+	out := make([]map[string]any, 0, len(argsList))
+	for _, args := range argsList {
+		resp, err := t.Execute(ctx, engine, args)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, resp)
+	}
+	return out, nil
+}
+
+// ExecutePipeline always returns ErrPipelineNotSupported; PIPELINE requires RESP3.
+func (t *HttpTransport) ExecutePipeline(ctx context.Context, engine string, commands [][]string, requestID string) ([]map[string]any, error) {
+	return nil, ErrPipelineNotSupported
 }
 
 // Close is a no-op for HTTP transport (stateless).
