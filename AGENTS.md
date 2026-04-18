@@ -375,6 +375,41 @@ resp, err := db.Stash.Inspect(ctx, "alice")
 err := db.Stash.Retrieve(ctx, "alice")
 ```
 
+## `db.Scroll` — Durable append-only event log with cursored readers and reader groups
+
+| Method | Args | Returns | Description |
+|--------|------|---------|-------------|
+| `Ack` | `ctx, log, group, offset` | `*ScrollAckResponse, error` | Acknowledge a pending entry. Idempotent. |
+| `Append` | `ctx, log, payload_b64, opts` | `*ScrollAppendResponse, error` | Append an entry to a log. Mints a monotonic offset through the per-log serializer and encrypts the entry with the per-log DEK. |
+| `Auth` | `ctx, token` | `*ScrollAuthResponse, error` | Authenticate the connection. Consumed at the connection layer before dispatch. |
+| `Claim` | `ctx, log, group, reader_id, min_idle_ms` | `*ScrollClaimResponse, error` | Reassign stalled pending entries to a new reader. Entries whose delivery_count would cross max_delivery_count are moved to scroll.dlq instead. |
+| `CommandList` | `ctx` | `*ScrollCommandListResponse, error` | List all supported commands with their syntax. |
+| `CreateGroup` | `ctx, log, group, start_offset` | `*ScrollCreateGroupResponse, error` | Create a reader group. start_offset = 'earliest' | '0' starts from offset 0; 'latest' | '-1' starts after the current tail. |
+| `DeleteGroup` | `ctx, log, group` | `*ScrollDeleteGroupResponse, error` | Tear down a single reader group: delete every pending record, then remove the group row. Counterpart to CREATE_GROUP; doesn't touch scroll.logs or the DEK, so other groups on the same log keep operating. Returns 'group not found' when the target doesn't exist. |
+| `DeleteLog` | `ctx, log` | `*ScrollDeleteLogResponse, error` | Hard-delete all log state (entries, groups, pending, offset counter) and destroy the wrapped DEK to crypto-shred. |
+| `GroupInfo` | `ctx, log, group` | `*ScrollGroupInfoResponse, error` | Stats for a reader group: cursor, members, and pending entry count. |
+| `Health` | `ctx` | `*ScrollHealthResponse, error` | Engine liveness probe. |
+| `Hello` | `ctx` | `*ScrollHelloResponse, error` | Engine identity + version + supported commands. Pre-auth version-detection handshake. |
+| `LogInfo` | `ctx, log` | `*ScrollLogInfoResponse, error` | Stats for a log: entries minted, latest offset, created-at, and list of reader groups. |
+| `Ping` | `ctx` | `error` | Connection liveness probe. Returns PONG. |
+| `Read` | `ctx, log, from_offset, limit` | `*ScrollReadResponse, error` | Range read starting at from_offset. Missing offsets (trimmed / TTL-expired) are skipped silently. |
+| `ReadGroup` | `ctx, log, group, reader_id, limit` | `*ScrollReadGroupResponse, error` | Advance the group cursor under CAS on `scroll.groups`, register PendingEntry records, and return the decrypted batch. |
+| `Replay` | `ctx, log, group, offset` | `*ScrollReplayResponse, error` | Move a DLQ entry back into a group's pending set. Preserves the original reader_id from the DLQ record, resets delivery_count to 1, stamps a fresh delivered_at_ms. Put-pending-first / delete-dlq-second ordering: a crash in-between leaves a duplicate, never a loss. Returns 'dlq entry not found' when the offset has no DLQ record, 'group not found' when the target group doesn't exist. |
+| `Tail` | `ctx, log, from_offset, limit, opts` | `*ScrollTailResponse, error` | Live tail: returns at most limit entries at or after from_offset, waiting up to TIMEOUT ms (default 30_000) for new appends. Closes with TAIL_OVERFLOW on subscribe backpressure; client should fall back to READ. |
+| `Trim` | `ctx, log, selector, value` | `*ScrollTrimResponse, error` | Explicit retention. MAX_LEN keeps the most recent N offsets; MAX_AGE drops entries whose appended_at_ms is older than now-ms. |
+
+### Examples
+
+```go
+ctx := context.Background()
+resp, err := db.Scroll.Ack(ctx, "log", "group", 1)
+// resp.Status
+resp, err := db.Scroll.Append(ctx, "log", "payload_b64")
+// resp.Offset
+resp, err := db.Scroll.Claim(ctx, "log", "group", "reader_id", 1)
+// resp.Claimed
+```
+
 ## Error Handling
 
 All methods return `error` (or `(*Response, error)`). Errors from the server are `*ShrouDBError` with a `Code` field matching the server error code (e.g., `NOTFOUND`, `DENIED`, `BADARG`).
@@ -444,6 +479,8 @@ if err != nil {
 | `REVOKED` | `ErrREVOKED` | Blob has been soft-revoked |
 | `SHREDDED` | `ErrSHREDDED` | Blob has been crypto-shredded (unrecoverable) |
 | `STORE` | `ErrSTORE` | ShrouDB Store (metadata) operation failed |
+| `CAPABILITY` | `ErrCAPABILITY` | Required engine capability is not configured (e.g. Cipher) |
+| `CONFLICT` | `ErrCONFLICT` | Reader group already exists, or CAS retry budget exhausted on group cursor advancement |
 
 ## Common Mistakes
 

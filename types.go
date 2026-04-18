@@ -1426,3 +1426,121 @@ type StashStoreOptions struct {
 	// Keyring — Cipher keyring name (default: stash-blobs)
 	Keyring *string `json:"keyring,omitempty"`
 }
+
+// ScrollAckResponse is the response from scroll.Ack().
+type ScrollAckResponse struct {
+	Status string `json:"status"`
+}
+
+// ScrollAppendResponse is the response from scroll.Append().
+type ScrollAppendResponse struct {
+	Offset int `json:"offset"`
+	Status string `json:"status"`
+}
+
+// ScrollAuthResponse is the response from scroll.Auth().
+type ScrollAuthResponse struct {
+	Status string `json:"status"`
+}
+
+// ScrollClaimResponse is the response from scroll.Claim().
+type ScrollClaimResponse struct {
+	Claimed []any `json:"claimed"`
+	Status string `json:"status"`
+}
+
+// ScrollCommandListResponse is the response from scroll.CommandList().
+type ScrollCommandListResponse struct {
+	Commands []any `json:"commands"`
+}
+
+// ScrollCreateGroupResponse is the response from scroll.CreateGroup().
+type ScrollCreateGroupResponse struct {
+	Status string `json:"status"`
+}
+
+// ScrollDeleteGroupResponse is the response from scroll.DeleteGroup().
+type ScrollDeleteGroupResponse struct {
+	Status string `json:"status"`
+}
+
+// ScrollDeleteLogResponse is the response from scroll.DeleteLog().
+type ScrollDeleteLogResponse struct {
+	Status string `json:"status"`
+}
+
+// ScrollGroupInfoResponse is the response from scroll.GroupInfo().
+type ScrollGroupInfoResponse struct {
+	CreatedAtMs int `json:"created_at_ms"`
+	Group string `json:"group"`
+	LastDeliveredOffset int `json:"last_delivered_offset"`
+	Log string `json:"log"`
+	Members []any `json:"members"`
+	PendingCount int `json:"pending_count"`
+}
+
+// ScrollHealthResponse is the response from scroll.Health().
+type ScrollHealthResponse struct {
+	Status string `json:"status"`
+}
+
+// ScrollHelloResponse is the response from scroll.Hello().
+type ScrollHelloResponse struct {
+	Capabilities []any `json:"capabilities"`
+	Commands []any `json:"commands"`
+	Engine string `json:"engine"`
+	Protocol string `json:"protocol"`
+	Version string `json:"version"`
+}
+
+// ScrollLogInfoResponse is the response from scroll.LogInfo().
+type ScrollLogInfoResponse struct {
+	CreatedAtMs int `json:"created_at_ms"`
+	EntriesMinted int `json:"entries_minted"`
+	Groups []any `json:"groups"`
+	LatestOffset any `json:"latest_offset"`
+	Log string `json:"log"`
+}
+
+// ScrollReadResponse is the response from scroll.Read().
+type ScrollReadResponse struct {
+	Entries []any `json:"entries"`
+	Status string `json:"status"`
+}
+
+// ScrollReadGroupResponse is the response from scroll.ReadGroup().
+type ScrollReadGroupResponse struct {
+	Entries []any `json:"entries"`
+	Status string `json:"status"`
+}
+
+// ScrollReplayResponse is the response from scroll.Replay().
+type ScrollReplayResponse struct {
+	Status string `json:"status"`
+}
+
+// ScrollTailResponse is the response from scroll.Tail().
+type ScrollTailResponse struct {
+	Entries []any `json:"entries"`
+	Status string `json:"status"`
+}
+
+// ScrollTrimResponse is the response from scroll.Trim().
+type ScrollTrimResponse struct {
+	Deleted int `json:"deleted"`
+	Status string `json:"status"`
+}
+
+// ScrollAppendOptions contains optional parameters for scroll.Append().
+type ScrollAppendOptions struct {
+	// Headers — String→string map, size-capped by max_header_bytes
+	Headers any `json:"headers,omitempty"`
+	// TtlMs — Per-entry TTL in milliseconds
+	TtlMs *int `json:"ttl_ms,omitempty"`
+}
+
+// ScrollTailOptions contains optional parameters for scroll.Tail().
+type ScrollTailOptions struct {
+	// TimeoutMs — Server-side wait budget; default 30000
+	TimeoutMs *int `json:"timeout_ms,omitempty"`
+}

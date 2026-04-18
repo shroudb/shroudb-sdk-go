@@ -37,12 +37,16 @@ const (
 	ErrBADARG = "BADARG"
 	// ErrBAD_ARG — Missing or malformed command argument
 	ErrBAD_ARG = "BAD_ARG"
+	// ErrCAPABILITY — Required engine capability is not configured (e.g. Cipher)
+	ErrCAPABILITY = "CAPABILITY"
 	// ErrCAPABILITY_MISSING — Required engine capability not available (e.g., Cipher for PII fields)
 	ErrCAPABILITY_MISSING = "CAPABILITY_MISSING"
 	// ErrCIPHER_UNAVAILABLE — Cipher engine not available for envelope encryption
 	ErrCIPHER_UNAVAILABLE = "CIPHER_UNAVAILABLE"
 	// ErrCLIENT_ENCRYPTED — Cannot fingerprint a client-encrypted blob (client manages encryption)
 	ErrCLIENT_ENCRYPTED = "CLIENT_ENCRYPTED"
+	// ErrCONFLICT — Reader group already exists, or CAS retry budget exhausted on group cursor advancement
+	ErrCONFLICT = "CONFLICT"
 	// ErrCRYPTO — Encryption or decryption failed
 	ErrCRYPTO = "CRYPTO"
 	// ErrDECRYPT — Cipher decryption failed

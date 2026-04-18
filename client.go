@@ -39,6 +39,8 @@ type Options struct {
 	Chronicle string
 	// Stash is the direct stash URI (overrides Moat for this engine).
 	Stash string
+	// Scroll is the direct scroll URI (overrides Moat for this engine).
+	Scroll string
 }
 
 // ShrouDB is the unified client for all ShrouDB engines.
@@ -59,6 +61,7 @@ type ShrouDB struct {
 	Courier *CourierNamespace
 	Chronicle *ChronicleNamespace
 	Stash *StashNamespace
+	Scroll *ScrollNamespace
 
 	transports []Transport
 }
@@ -81,6 +84,7 @@ func New(opts Options) (*ShrouDB, error) {
 				"courier": "/v1/courier",
 				"chronicle": "/v1/chronicle",
 				"stash": "/v1/stash",
+				"scroll": "/v1/scroll",
 			}
 			defaultTransport = NewHttpTransport(opts.Moat, opts.Token, prefixes)
 		} else {
@@ -201,6 +205,17 @@ func New(opts Options) (*ShrouDB, error) {
 		db.Stash = newStashNamespace(t, "stash")
 	} else if defaultTransport != nil {
 		db.Stash = newStashNamespace(defaultTransport, "stash")
+	}
+
+	if opts.Scroll != "" {
+		t, err := NewResp3Transport(opts.Scroll)
+		if err != nil {
+			return nil, fmt.Errorf("scroll transport: %w", err)
+		}
+		db.transports = append(db.transports, t)
+		db.Scroll = newScrollNamespace(t, "scroll")
+	} else if defaultTransport != nil {
+		db.Scroll = newScrollNamespace(defaultTransport, "scroll")
 	}
 
 	return db, nil

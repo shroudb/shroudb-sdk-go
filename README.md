@@ -59,6 +59,7 @@ db, err := shroudb.New(shroudb.Options{
 	Courier: "shroudb-courier://token@localhost:6999",
 	Chronicle: "chronicle://token@localhost:7199",
 	Stash: "shroudb-stash://token@localhost:6399",
+	Scroll: "scroll://token@localhost:7200",
 })
 ```
 
@@ -352,6 +353,31 @@ Encrypted blob storage with S3 backend and envelope encryption
 | `Rewrap(ctx, id)` | Re-wrap a blob's DEK under the current Cipher key version. The blob ciphertext is not re-encrypted — only the key wrapping changes. |
 | `Store(ctx, id, data_b64, opts)` | Store an encrypted blob |
 | `Trace(ctx, id)` | Return the viewer map (who has copies) for a blob |
+
+### `db.Scroll`
+
+Durable append-only event log with cursored readers and reader groups
+
+| Method | Description |
+|--------|-------------|
+| `Ack(ctx, log, group, offset)` | Acknowledge a pending entry. Idempotent. |
+| `Append(ctx, log, payload_b64, opts)` | Append an entry to a log. Mints a monotonic offset through the per-log serializer and encrypts the entry with the per-log DEK. |
+| `Auth(ctx, token)` | Authenticate the connection. Consumed at the connection layer before dispatch. |
+| `Claim(ctx, log, group, reader_id, min_idle_ms)` | Reassign stalled pending entries to a new reader. Entries whose delivery_count would cross max_delivery_count are moved to scroll.dlq instead. |
+| `CommandList(ctx)` | List all supported commands with their syntax. |
+| `CreateGroup(ctx, log, group, start_offset)` | Create a reader group. start_offset = 'earliest' | '0' starts from offset 0; 'latest' | '-1' starts after the current tail. |
+| `DeleteGroup(ctx, log, group)` | Tear down a single reader group: delete every pending record, then remove the group row. Counterpart to CREATE_GROUP; doesn't touch scroll.logs or the DEK, so other groups on the same log keep operating. Returns 'group not found' when the target doesn't exist. |
+| `DeleteLog(ctx, log)` | Hard-delete all log state (entries, groups, pending, offset counter) and destroy the wrapped DEK to crypto-shred. |
+| `GroupInfo(ctx, log, group)` | Stats for a reader group: cursor, members, and pending entry count. |
+| `Health(ctx)` | Engine liveness probe. |
+| `Hello(ctx)` | Engine identity + version + supported commands. Pre-auth version-detection handshake. |
+| `LogInfo(ctx, log)` | Stats for a log: entries minted, latest offset, created-at, and list of reader groups. |
+| `Ping(ctx)` | Connection liveness probe. Returns PONG. |
+| `Read(ctx, log, from_offset, limit)` | Range read starting at from_offset. Missing offsets (trimmed / TTL-expired) are skipped silently. |
+| `ReadGroup(ctx, log, group, reader_id, limit)` | Advance the group cursor under CAS on `scroll.groups`, register PendingEntry records, and return the decrypted batch. |
+| `Replay(ctx, log, group, offset)` | Move a DLQ entry back into a group's pending set. Preserves the original reader_id from the DLQ record, resets delivery_count to 1, stamps a fresh delivered_at_ms. Put-pending-first / delete-dlq-second ordering: a crash in-between leaves a duplicate, never a loss. Returns 'dlq entry not found' when the offset has no DLQ record, 'group not found' when the target group doesn't exist. |
+| `Tail(ctx, log, from_offset, limit, opts)` | Live tail: returns at most limit entries at or after from_offset, waiting up to TIMEOUT ms (default 30_000) for new appends. Closes with TAIL_OVERFLOW on subscribe backpressure; client should fall back to READ. |
+| `Trim(ctx, log, selector, value)` | Explicit retention. MAX_LEN keeps the most recent N offsets; MAX_AGE drops entries whose appended_at_ms is older than now-ms. |
 
 ## Error Handling
 
