@@ -300,12 +300,12 @@ Just-in-time decryption delivery engine
 | Method | Description |
 |--------|-------------|
 | `Auth(ctx, token)` | Authenticate the connection with a token |
-| `ChannelCreate(ctx, name, type, config_json)` | Create a delivery channel |
+| `ChannelCreate(ctx, name, type, opts)` | Create a delivery channel. Config may be supplied as a JSON blob or as keyword args. |
 | `ChannelDelete(ctx, name)` | Delete a channel |
 | `ChannelGet(ctx, name)` | Get channel configuration |
 | `ChannelList(ctx)` | List all channels |
 | `CommandList(ctx)` | List available commands |
-| `Deliver(ctx, json)` | Decrypt recipient and deliver a message |
+| `Deliver(ctx, opts)` | Decrypt recipient and deliver a message. Request may be a JSON DeliveryRequest or keyword args. |
 | `DeliveryGet(ctx, id)` | Get a delivery receipt by ID |
 | `DeliveryList(ctx, opts)` | List delivery receipts, optionally filtered by channel |
 | `Health(ctx)` | Server health check |

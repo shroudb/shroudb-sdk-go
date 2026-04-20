@@ -1209,6 +1209,30 @@ type CourierNotifyEventResponse struct {
 	Status string `json:"status"`
 }
 
+// CourierChannelCreateOptions contains optional parameters for courier.ChannelCreate().
+type CourierChannelCreateOptions struct {
+	// ConfigJson — Adapter configuration (legacy JSON-blob form); omit when using keyword args
+	ConfigJson *string `json:"config_json,omitempty"`
+	// Url — Default recipient URL/address (keyword arg; alternative to config_json)
+	Url *string `json:"URL,omitempty"`
+}
+
+// CourierDeliverOptions contains optional parameters for courier.Deliver().
+type CourierDeliverOptions struct {
+	// Json — Full DeliveryRequest (legacy JSON-blob form)
+	Json *string `json:"json,omitempty"`
+	// Channel — Channel name (keyword-arg form)
+	Channel *string `json:"channel,omitempty"`
+	// Recipient — Recipient address/URL (keyword-arg form)
+	Recipient *string `json:"recipient,omitempty"`
+	// Subject — Message subject (keyword arg)
+	Subject *string `json:"SUBJECT,omitempty"`
+	// Body — Message body (keyword arg)
+	Body *string `json:"BODY,omitempty"`
+	// ContentType — Content type: plain|html (keyword arg)
+	ContentType *string `json:"CONTENT_TYPE,omitempty"`
+}
+
 // CourierDeliveryListOptions contains optional parameters for courier.DeliveryList().
 type CourierDeliveryListOptions struct {
 	// Channel — Filter by channel name

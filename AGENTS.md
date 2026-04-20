@@ -292,12 +292,12 @@ resp, err := db.Keep.List(ctx, "prefix")
 | Method | Args | Returns | Description |
 |--------|------|---------|-------------|
 | `Auth` | `ctx, token` | `*CourierAuthResponse, error` | Authenticate the connection with a token |
-| `ChannelCreate` | `ctx, name, type, config_json` | `*CourierChannelCreateResponse, error` | Create a delivery channel |
+| `ChannelCreate` | `ctx, name, type, opts` | `*CourierChannelCreateResponse, error` | Create a delivery channel. Config may be supplied as a JSON blob or as keyword args. |
 | `ChannelDelete` | `ctx, name` | `*CourierChannelDeleteResponse, error` | Delete a channel |
 | `ChannelGet` | `ctx, name` | `*CourierChannelGetResponse, error` | Get channel configuration |
 | `ChannelList` | `ctx` | `*CourierChannelListResponse, error` | List all channels |
 | `CommandList` | `ctx` | `*CourierCommandListResponse, error` | List available commands |
-| `Deliver` | `ctx, json` | `*CourierDeliverResponse, error` | Decrypt recipient and deliver a message |
+| `Deliver` | `ctx, opts` | `*CourierDeliverResponse, error` | Decrypt recipient and deliver a message. Request may be a JSON DeliveryRequest or keyword args. |
 | `DeliveryGet` | `ctx, id` | `*CourierDeliveryGetResponse, error` | Get a delivery receipt by ID |
 | `DeliveryList` | `ctx, opts` | `*CourierDeliveryListResponse, error` | List delivery receipts, optionally filtered by channel |
 | `Health` | `ctx` | `*CourierHealthResponse, error` | Server health check |
@@ -310,7 +310,7 @@ resp, err := db.Keep.List(ctx, "prefix")
 
 ```go
 ctx := context.Background()
-resp, err := db.Courier.ChannelCreate(ctx, "name", "type", "config_json")
+resp, err := db.Courier.ChannelCreate(ctx, "name", "type")
 // resp.ChannelType
 resp, err := db.Courier.ChannelDelete(ctx, "name")
 // resp.Name

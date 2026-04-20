@@ -39,12 +39,19 @@ func (ns *CourierNamespace) Auth(ctx context.Context, token string) (*CourierAut
 	return &resp, nil
 }
 
-// ChannelCreate executes CHANNEL CREATE — Create a delivery channel
-func (ns *CourierNamespace) ChannelCreate(ctx context.Context, name string, typ string, config_json string) (*CourierChannelCreateResponse, error) {
+// ChannelCreate executes CHANNEL CREATE — Create a delivery channel. Config may be supplied as a JSON blob or as keyword args.
+func (ns *CourierNamespace) ChannelCreate(ctx context.Context, name string, typ string, opts *CourierChannelCreateOptions) (*CourierChannelCreateResponse, error) {
 	args := []string{"CHANNEL", "CREATE"}
 	args = append(args, fmt.Sprint(name))
 	args = append(args, fmt.Sprint(typ))
-	args = append(args, fmt.Sprint(config_json))
+	if opts != nil {
+		if opts.ConfigJson != nil {
+			args = append(args, "CONFIG_JSON", fmt.Sprint(*opts.ConfigJson))
+		}
+		if opts.Url != nil {
+			args = append(args, "URL", fmt.Sprint(*opts.Url))
+		}
+	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
 	if err != nil {
 		return nil, err
@@ -134,10 +141,29 @@ func (ns *CourierNamespace) CommandList(ctx context.Context) (*CourierCommandLis
 	return &resp, nil
 }
 
-// Deliver executes DELIVER — Decrypt recipient and deliver a message
-func (ns *CourierNamespace) Deliver(ctx context.Context, jsonData string) (*CourierDeliverResponse, error) {
-	args := []string{"DELIVER"}
-	args = append(args, fmt.Sprint(jsonData))
+// Deliver executes DELIVER (<json> | — Decrypt recipient and deliver a message. Request may be a JSON DeliveryRequest or keyword args.
+func (ns *CourierNamespace) Deliver(ctx context.Context, opts *CourierDeliverOptions) (*CourierDeliverResponse, error) {
+	args := []string{"DELIVER", "(<json> |"}
+	if opts != nil {
+		if opts.Json != nil {
+			args = append(args, "JSON", fmt.Sprint(*opts.Json))
+		}
+		if opts.Channel != nil {
+			args = append(args, "CHANNEL", fmt.Sprint(*opts.Channel))
+		}
+		if opts.Recipient != nil {
+			args = append(args, "RECIPIENT", fmt.Sprint(*opts.Recipient))
+		}
+		if opts.Subject != nil {
+			args = append(args, "SUBJECT", fmt.Sprint(*opts.Subject))
+		}
+		if opts.Body != nil {
+			args = append(args, "BODY", fmt.Sprint(*opts.Body))
+		}
+		if opts.ContentType != nil {
+			args = append(args, "CONTENT_TYPE", fmt.Sprint(*opts.ContentType))
+		}
+	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
 	if err != nil {
 		return nil, err
