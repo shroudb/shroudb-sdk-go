@@ -1,5 +1,5 @@
 {
-  "sdk_version": "2.5.0",
+  "sdk_version": "2.6.0",
   "wire_protocol": "RESP3/1",
   "engines": {
     "shroudb": { "min_version": "1.0.0" },
