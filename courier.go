@@ -46,7 +46,7 @@ func (ns *CourierNamespace) ChannelCreate(ctx context.Context, name string, typ 
 	args = append(args, fmt.Sprint(typ))
 	if opts != nil {
 		if opts.ConfigJson != nil {
-			args = append(args, "CONFIG_JSON", fmt.Sprint(*opts.ConfigJson))
+			args = append(args, fmt.Sprint(*opts.ConfigJson))
 		}
 		if opts.Url != nil {
 			args = append(args, "URL", fmt.Sprint(*opts.Url))
@@ -141,18 +141,18 @@ func (ns *CourierNamespace) CommandList(ctx context.Context) (*CourierCommandLis
 	return &resp, nil
 }
 
-// Deliver executes DELIVER (<json> | — Decrypt recipient and deliver a message. Request may be a JSON DeliveryRequest or keyword args.
+// Deliver executes DELIVER — Decrypt recipient and deliver a message. Request may be a JSON DeliveryRequest or keyword args.
 func (ns *CourierNamespace) Deliver(ctx context.Context, opts *CourierDeliverOptions) (*CourierDeliverResponse, error) {
-	args := []string{"DELIVER", "(<json> |"}
+	args := []string{"DELIVER"}
 	if opts != nil {
 		if opts.Json != nil {
-			args = append(args, "JSON", fmt.Sprint(*opts.Json))
+			args = append(args, fmt.Sprint(*opts.Json))
 		}
 		if opts.Channel != nil {
-			args = append(args, "CHANNEL", fmt.Sprint(*opts.Channel))
+			args = append(args, fmt.Sprint(*opts.Channel))
 		}
 		if opts.Recipient != nil {
-			args = append(args, "RECIPIENT", fmt.Sprint(*opts.Recipient))
+			args = append(args, fmt.Sprint(*opts.Recipient))
 		}
 		if opts.Subject != nil {
 			args = append(args, "SUBJECT", fmt.Sprint(*opts.Subject))

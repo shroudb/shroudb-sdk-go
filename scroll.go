@@ -367,9 +367,7 @@ func (ns *ScrollNamespace) Tail(ctx context.Context, log string, from_offset int
 func (ns *ScrollNamespace) Trim(ctx context.Context, log string, selector string, value int) (*ScrollTrimResponse, error) {
 	args := []string{"TRIM"}
 	args = append(args, log)
-	args = append(args, "MAX_LEN")
 	args = append(args, selector)
-	args = append(args, "TRIM")
 	args = append(args, fmt.Sprint(value))
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
 	if err != nil {

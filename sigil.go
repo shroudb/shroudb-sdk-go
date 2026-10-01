@@ -410,17 +410,16 @@ func (ns *SigilNamespace) Ping(ctx context.Context) (*SigilPingResponse, error) 
 func (ns *SigilNamespace) SchemaAlter(ctx context.Context, name string, action string, opts *SigilSchemaAlterOptions) (*SigilSchemaAlterResponse, error) {
 	args := []string{"SCHEMA", "ALTER"}
 	args = append(args, name)
-	args = append(args, "ADD")
 	args = append(args, action)
 	if opts != nil {
 		if opts.FieldJson != nil {
 			jsonBytes, err := json.Marshal(opts.FieldJson)
 			if err == nil {
-				args = append(args, "FIELD_JSON", string(jsonBytes))
+				args = append(args, string(jsonBytes))
 			}
 		}
 		if opts.FieldName != nil {
-			args = append(args, "FIELD_NAME", fmt.Sprint(*opts.FieldName))
+			args = append(args, fmt.Sprint(*opts.FieldName))
 		}
 	}
 	raw, err := ns.transport.Execute(ctx, ns.engine, args)
